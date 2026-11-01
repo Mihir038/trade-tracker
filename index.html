@@ -59,6 +59,7 @@ dialog::backdrop{background:rgba(5,8,20,.55)}.dh{display:flex;justify-content:sp
 .thumb{width:150px;height:96px;object-fit:cover;border-radius:8px;border:1px solid var(--bd)}
 .bar{height:6px;border-radius:3px;background:var(--bd);overflow:hidden;min-width:70px}.bar i{display:block;height:100%}
 .auth-shell{min-height:100vh;display:grid;place-items:center;padding:24px}.auth-card{width:min(440px,100%);background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:26px;box-shadow:0 18px 50px #10172a12}.auth-card h1{margin-bottom:6px}.auth-card p{margin:0 0 18px}.auth-card form{display:grid;gap:14px}.auth-card .btn{justify-content:center}.auth-error{color:var(--r);min-height:1.5em}.auth-links{display:flex;justify-content:space-between;align-items:center;margin-top:14px}.auth-links button{border:0;background:none;color:var(--ac);font:inherit;cursor:pointer}.account-email{overflow-wrap:anywhere}.account-footer{display:grid;gap:2px;overflow:hidden;padding:10px 8px;font-size:12px}.account-footer small{color:var(--mu);overflow-wrap:anywhere}.sync-state{font-size:12px;color:var(--mu);margin-top:8px}.toast{position:fixed;right:16px;bottom:16px;z-index:60;max-width:min(420px,calc(100vw - 32px));padding:12px 16px;border:1px solid var(--bd);border-radius:10px;background:var(--sf);box-shadow:0 8px 30px #10172a24}
+button:disabled{opacity:.55;cursor:not-allowed}.admin-list{display:grid;gap:10px}.admin-list .card{min-width:0}.admin-list .row>div:first-child{min-width:0;overflow-wrap:anywhere}
 @media(max-width:1024px){#side{width:64px;align-items:center;padding:14px 8px}#side a span,.brand span,.account-footer{display:none}#side a{padding:10px}.brand{padding:2px 0 14px}main{margin-left:64px;padding:22px 20px 48px}.g2,.g11{grid-template-columns:1fr}}
 @media(max-width:700px){#side{inset:auto 0 0 0;width:auto;height:58px;flex-direction:row;justify-content:space-around;border-right:0;border-top:1px solid var(--bd);padding:6px}#side .brand,#side .sp,#side .tt{display:none}#side a{padding:10px 11px}
  main{margin:0;padding:14px 14px 80px}.top{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--sf);border-bottom:1px solid var(--bd)}.top .brand{padding:0}
@@ -143,9 +144,11 @@ const L=(a,b,c,d)=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" style="stroke:
 const cs=(a,w=30)=>{let t=`<svg viewBox="0 0 ${a.length*w+8} 100">`;a.forEach((k,i)=>{const[o,h,l,c]=k,x=i*w+w/2+4,col=c>=o?'var(--g)':'var(--r)',Y=v=>100-v;t+=`<line x1="${x}" x2="${x}" y1="${Y(h)}" y2="${Y(l)}" style="stroke:${col};stroke-width:2"/><rect x="${x-8}" y="${Y(Math.max(o,c))}" width="16" height="${Math.max(1.5,Math.abs(c-o))}" rx="2" style="fill:${col}"/>`});return t+'</svg>'};
 const bars=(a,m=0)=>sv(a.map((h,i)=>`<rect x="${i*19+6}" y="${m?(h>0?50-h:50):100-h}" width="13" height="${Math.abs(h)}" rx="3" style="fill:${m?(h>0?'var(--g)':'var(--r)'):'var(--ac)'}"/>`).join('')+(m?L(0,50,200,50):''));
 const P='0,70 20,55 40,65 60,45 80,55 100,35 120,45 140,25 160,35 180,15 200,22';
-const LC=['All','Candlesticks','Chart patterns','Indicators','Structure','Risk & mind'];
-const VLC=['All','Market basics','Investing basics','Technical analysis','Chart reading','Candlesticks','Indicators','Risk & mindset','Investor awareness'];
-const VL=[
+const DEFAULT_LC=['All','Candlesticks','Chart patterns','Indicators','Structure','Risk & mind'];
+let LC=[...DEFAULT_LC];
+const DEFAULT_VLC=['All','Market basics','Investing basics','Technical analysis','Chart reading','Candlesticks','Indicators','Risk & mindset','Investor awareness'];
+let VLC=[...DEFAULT_VLC];
+const DEFAULT_VL=[
  {id:'HaiM8jPDEhk',lesson:'https://zerodha.com/varsity/chapter/why-do-stock-prices-fluctuate/',title:'Why Do Stock Prices Fluctuate?',tag:'Market basics',category:'Market basics',duration:'3:51',desc:'A quick primer on how buyers, sellers, news and supply and demand move prices.'},
  {id:'8rUc0MaMzik',lesson:'https://zerodha.com/varsity/chapter/introduction-to-fundamental-analysis/',title:'Introduction to Fundamental Analysis',tag:'Investing basics',category:'Investing basics',duration:'4:07',desc:'Learn how to look beyond a stock chart and begin evaluating the underlying business.'},
  {id:'yzRP-mA2eiE',lesson:'https://zerodha.com/varsity/chapter/fundamental-analysis-vs-technical-analysis/',title:'Fundamental vs. Technical Analysis',tag:'Getting started',category:'Investing basics',duration:'5:41',desc:'A helpful orientation to two common approaches to studying stocks and markets.'},
@@ -163,7 +166,8 @@ const VL=[
  {id:'Sfsdf-iKiwQ',lesson:'https://zerodha.com/varsity/module/introduction-to-stock-markets-video-series/',source:'Zerodha Varsity Hindi',title:'Why Should You Invest?',tag:'Market basics',duration:'11:53',desc:'A beginner-friendly lesson about investing and why people participate in the stock market.',category:'Market basics'},
  {id:'SFgQNe7KZIA',lesson:'https://zerodha.com/varsity/module/introduction-to-stock-markets-video-series/',source:'Zerodha Varsity Hindi',title:'Stock Market Explained for Beginners',tag:'Market basics',duration:'10:36',desc:'A Hindi-language overview of how the stock market works, aimed at new learners.',category:'Market basics'}
 ];
-const LI=[
+let VL=JSON.parse(JSON.stringify(DEFAULT_VL));
+const DEFAULT_LI=[
 ['Candlesticks','Candle anatomy',cs([[30,80,15,70],[70,85,20,35]]),'The body runs from open to close; wicks show the high and low. Green closed above its open, red below. Long body = conviction, long wick = rejection.'],
 ['Candlesticks','Doji',cs([[50,78,22,51]]),'Open and close are almost equal: indecision. It matters most after a strong move or at support/resistance. Wait for the next candle to confirm.'],
 ['Candlesticks','Marubozu',cs([[25,75,25,75],[75,75,25,25]]),'A full body with almost no wicks. One side controlled the whole candle, so it shows strong momentum.'],
@@ -198,8 +202,10 @@ const LI=[
 ['Risk & mind','Over trading','','Too many low-quality trades pile up brokerage and mistakes. Set a maximum trade count and a daily loss limit before the market opens.'],
 ['Risk & mind','Review routine','','Before the market: mark levels and trend. After: log each trade with a chart screenshot, the learning and the mistake. Weekly: filter the log by "Rules: No" and read what it cost you.']];
 
-const CTG=['Chart basics','Lines & levels','Channels','Fibonacci','Gann','Patterns & waves','Forecast & measurement','Shapes & annotation','Chart controls'];
-const CT=[
+let LI=JSON.parse(JSON.stringify(DEFAULT_LI));
+const DEFAULT_CTG=['Chart basics','Lines & levels','Channels','Fibonacci','Gann','Patterns & waves','Forecast & measurement','Shapes & annotation','Chart controls'];
+let CTG=[...DEFAULT_CTG];
+const DEFAULT_CT=[
 ['Chart basics','Crosshair','Tracks a precise time and price across the chart; the status line can show the selected candle’s OHLC and volume.','Move it over a candle to inspect values. Change its style in chart settings if you prefer a dot or a price/time cross.','Use the same timeframe and scale when comparing two points.'],
 ['Chart basics','Chart types','Candles show open, high, low and close; bars show the same data in another style; line charts usually connect closes.','Open the chart-type menu and choose candles, hollow candles, bars, line, area or another supported style.','A chart style changes how price is displayed, not the underlying market data.'],
 ['Chart basics','Timeframes','A timeframe sets how much time one candle or bar represents. Higher frames smooth noise; lower frames show detail.','Choose an interval such as 5m, 30m, 1H, Daily or Weekly from the chart toolbar.','Start analysis on a higher timeframe, then use a lower one for detail; do not assume one candle predicts the next.'],
@@ -274,6 +280,7 @@ const CT=[
 ['Chart controls','Object tree / drawing list','Lists chart objects so you can select, rename, reorder, hide, lock or delete them.','Open the object-tree or drawings-list panel, select an item, then use its controls or context menu.','When a drawing seems missing, check whether it is hidden or on another symbol/timeframe.'],
 ['Chart controls','Undo & redo','Reverses or reapplies the most recent chart action when the platform supports it.','Use the undo/redo buttons or keyboard shortcuts shown by your chart platform.','Undo can affect drawings or other chart changes; inspect the chart after using it.']
 ];
+let CT=JSON.parse(JSON.stringify(DEFAULT_CT));
 function chartToolVisual(tool){const[group,title]=tool,ln=(x1,y1,x2,y2,color='var(--mu)',dash='')=>`<path d="M${x1} ${y1}L${x2} ${y2}" fill="none" stroke="${color}" stroke-width="1.7" stroke-linecap="round"${dash?` stroke-dasharray="${dash}"`:''}/>`;
  const poly=(points,color='var(--ac)',width=2.2)=>`<polyline points="${points}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round"/>`;
  const dot=(x,y,color='var(--ac)')=>`<circle cx="${x}" cy="${y}" r="3" fill="${color}"/>`;
@@ -361,10 +368,34 @@ const K={t:'tt_trades_v1',s:'tt_strats_v1',n:'tt_notes_v1',c:'tt_set_v1'};
 let T=[],N=[],C={cur:'₹',cap:0,theme:'system'};
 const defaultStrategies=()=>[{id:1,name:'Trend pullback',desc:'Trade pullbacks to a moving average in the direction of the higher time frame trend.',rules:'Higher time frame trend agrees\nEntry near EMA or support\nRisk:reward at least 1:2'},{id:2,name:'Breakout',desc:'Enter when price closes beyond a well-tested level with volume.',rules:'Level tested at least twice\nClose beyond the level\nVolume above average'}];
 let S=defaultStrategies();
+const ADMIN_EMAIL='admin@jaymaharaj.in';
 let supabaseClient=null,authUser=null,authMode='login',syncTimer=null,syncQueue=Promise.resolve(),syncVersion=0,toastTimer=null,clearLegacyAfterSync=false;
+let isAdmin=false,adminAccessError='',siteContentError='',siteContentSeeded=false;
+let adminTab='learning',adminLearningKind='videos',adminEditingIndex=null;
+let adminUsers=[],adminUsersLoaded=false,adminUsersLoading=false,adminUsersError='',adminSelectedUser=null;
+let adminJournalText='',adminJournalLoading=false,adminJournalError='';
+const adminCandidate=()=>String(authUser?.email||'').trim().toLowerCase()===ADMIN_EMAIL;
+const orderedCategories=(base,values)=>{const unique=[...new Set(values)];return[...base.filter(x=>x!=='All'&&unique.includes(x)),...unique.filter(x=>!base.includes(x))]};
+const resetLearningContent=()=>{VL=JSON.parse(JSON.stringify(DEFAULT_VL));LI=JSON.parse(JSON.stringify(DEFAULT_LI));CT=JSON.parse(JSON.stringify(DEFAULT_CT));LC=['All',...orderedCategories(DEFAULT_LC,LI.map(x=>x[0]))];VLC=['All',...orderedCategories(DEFAULT_VLC,VL.map(x=>x.category))];CTG=orderedCategories(DEFAULT_CTG,CT.map(x=>x[0]));videoCategory='All';lcat='All';chartGroup='All'};
+function normalizeLearningContent(content){
+ if(!content||!Array.isArray(content.videos)||!Array.isArray(content.referenceTopics)||!Array.isArray(content.chartTools))throw new Error('The saved learning content has an unexpected format.');
+ const text=(value,label,max)=>{if(typeof value!=='string'||!value.trim()||value.length>max)throw new Error(`${label} must be a non-empty text value (maximum ${max} characters).`);return value.trim()};
+ const url=(value,label)=>{try{const parsed=new URL(value);if(parsed.protocol!=='https:')throw new Error();return parsed.href}catch{throw new Error(`${label} must be a valid HTTPS link.`)}};
+ const videos=content.videos.map((v,i)=>{if(!v||typeof v!=='object'||typeof v.id!=='string'||!/^[-\w]{11}$/.test(v.id))throw new Error(`Video ${i+1} has an invalid YouTube ID.`);const category=text(v.category,'Video category',60),id=v.id;return{id,lesson:url(v.lesson,'Lesson link'),title:text(v.title,'Video title',160),tag:category,category,duration:text(v.duration||'Video','Duration',20),desc:text(v.desc,'Description',1000),source:text(v.source||'Zerodha Varsity','Source',100)}});
+ const illustrations=new Map(DEFAULT_LI.map(item=>[`${item[0]}\u0000${item[1]}`,item[2]]));
+ const references=content.referenceTopics.map((item,i)=>{if(!item||typeof item!=='object')throw new Error(`Reference topic ${i+1} is invalid.`);const category=text(item.category,'Reference category',60),title=text(item.title,'Reference title',160);return[category,title,illustrations.get(`${category}\u0000${title}`)||'',text(item.description,'Reference description',1500)]});
+ const chartTools=content.chartTools.map((item,i)=>{if(!item||typeof item!=='object')throw new Error(`Chart tool ${i+1} is invalid.`);return[text(item.category,'Chart category',60),text(item.title,'Chart tool title',160),text(item.what,'What it does',1000),text(item.how,'How to use it',1000),text(item.tip,'Learning tip',1000)]});
+ return{videos,referenceTopics:references,chartTools};
+}
+function applyLearningContent(content){const normalized=normalizeLearningContent(content);VL=normalized.videos;LI=normalized.referenceTopics;CT=normalized.chartTools;LC=['All',...orderedCategories(DEFAULT_LC,LI.map(x=>x[0]))];VLC=['All',...orderedCategories(DEFAULT_VLC,VL.map(x=>x.category))];CTG=orderedCategories(DEFAULT_CTG,CT.map(x=>x[0]));siteContentSeeded=true;siteContentError='';if(!VLC.includes(videoCategory))videoCategory='All';if(!LC.includes(lcat))lcat='All';if(!CTG.includes(chartGroup))chartGroup='All'}
+function learningContentPayload(){
+ return{videos:VL.map(({id,lesson,title,category,duration,desc,source})=>({id,lesson,title,category,duration,desc,source})),
+ referenceTopics:LI.map(([category,title,,description])=>({category,title,description})),
+ chartTools:CT.map(([category,title,what,how,tip])=>({category,title,what,how,tip}))}
+}
 const persist=()=>{if(authUser)queueCloudSave()};
 const td=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
-const num=v=>parseFloat(v)||0,esc=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=v=>parseFloat(v)||0,esc=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),jsArg=x=>esc(JSON.stringify(x));
 const m=(v,sg)=>`${v<0?'−':sg&&v>0?'+':''}${esc(C.cur)}${Math.abs(v).toLocaleString('en-IN',{maximumFractionDigits:2})}`;
 const cl=v=>v>0?'pos':v<0?'neg':'',pc=v=>(v<0?'−':'')+Math.abs(v).toFixed(1)+'%',cmp=(a,b)=>a.date.localeCompare(b.date)||a.id-b.id;
 const kf=v=>{const a=Math.abs(v),s=v<0?'−':'';return s+(a>=1e6?(a/1e6).toFixed(1)+'M':a>=1e3?(a/1e3).toFixed(1)+'k':Math.round(a))};
@@ -387,12 +418,26 @@ function showAuthGate(){ $('#appShell').hidden=true;$('#authGate').hidden=false}
 function showToast(message){const el=$('#toast');el.textContent=message;el.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.hidden=true},6000)}
 function setSyncStatus(message){const el=$('#syncState');if(el)el.textContent=message}
 function reportCloudError(error){const message=error?.message||String(error);setSyncStatus('Sync failed');showToast(`Could not save your journal: ${message}`)}
-function resetJournal(){T=[];N=[];C={cur:'₹',cap:0,theme:'system'};S=defaultStrategies()}
-async function loadJournal(user){if(authUser?.id===user.id&&!$('#appShell').hidden){authUser=user;render();return}
+function clearAdminWorkspace(){adminUsers=[];adminUsersLoaded=false;adminUsersLoading=false;adminUsersError='';adminSelectedUser=null;adminJournalText='';adminJournalLoading=false;adminJournalError=''}
+async function refreshAdminAccess(user){
+ const wasAdmin=isAdmin;isAdmin=false;adminAccessError='';
+ if(String(user?.email||'').trim().toLowerCase()!==ADMIN_EMAIL){if(wasAdmin)clearAdminWorkspace();return}
+ try{const{data,error}=await supabaseClient.rpc('is_site_admin');if(error)throw error;isAdmin=data===true}
+ catch(error){adminAccessError=error.message||String(error)}
+ if(wasAdmin&&!isAdmin)clearAdminWorkspace()
+}
+async function refreshSiteContent(){
+ siteContentError='';siteContentSeeded=false;
+ try{const{data,error}=await supabaseClient.from('site_content').select('content').eq('id','learning').maybeSingle();if(error)throw error;if(data)applyLearningContent(data.content);else resetLearningContent()}
+ catch(error){siteContentError=error.message||String(error);resetLearningContent()}
+}
+function resetJournal(){T=[];N=[];C={cur:'₹',cap:0,theme:'system'};S=defaultStrategies();isAdmin=false;adminAccessError='';siteContentError='';siteContentSeeded=false;adminTab='learning';adminLearningKind='videos';adminEditingIndex=null;clearAdminWorkspace();resetLearningContent()}
+async function loadJournal(user){if(authUser?.id===user.id&&!$('#appShell').hidden){authUser=user;await Promise.all([refreshAdminAccess(user),refreshSiteContent()]);render();return}
  if(syncTimer){clearTimeout(syncTimer);syncTimer=null}
  authUser=user;resetJournal();showAuthGate();$('#authTitle').textContent='Loading your journal';$('#authDescription').textContent='Loading private account data…';$('#authForm').hidden=true;$('#authLinks').hidden=true;$('#authSetup').hidden=true;
  try{const{data,error}=await supabaseClient.from('journal_data').select('trades,strategies,notes,settings').eq('user_id',user.id).maybeSingle();if(error)throw error;
   if(data){T=Array.isArray(data.trades)?data.trades:[];S=Array.isArray(data.strategies)?data.strategies:defaultStrategies();N=Array.isArray(data.notes)?data.notes:[];C=Object.assign({cur:'₹',cap:0,theme:'system'},data.settings&&typeof data.settings==='object'?data.settings:{})}
+  await Promise.all([refreshAdminAccess(user),refreshSiteContent()]);
   syncVersion=0;savedVersion=0;setSyncStatus('Synced');render();$('#appShell').hidden=false;$('#authGate').hidden=true
  }catch(error){authUser=null;$('#authTitle').textContent='Journal unavailable';$('#authDescription').textContent='Your account is signed in, but its private journal could not be loaded.';$('#authSetup').hidden=false;$('#authSetup').textContent=`${error.message||error} Check the Supabase setup and run supabase/schema.sql, then retry.`;const retry=document.createElement('button');retry.type='button';retry.className='btn';retry.textContent='Retry';retry.onclick=()=>loadJournal(user);const logout=document.createElement('button');logout.type='button';logout.className='btn';logout.textContent='Sign out';logout.onclick=()=>supabaseClient.auth.signOut().catch(reportCloudError);$('#authSetup').append(' ',retry,' ',logout);$('#authForm').hidden=true;$('#authLinks').hidden=true}
 }
@@ -509,15 +554,15 @@ pages.analytics=()=>{const s=st(T),D=[...T].sort(cmp),wd=['Mon','Tue','Wed','Thu
 pages.strategies=()=>ph('Strategies','Define your playbook and see which setups pay',`<button class="btn pr" onclick="openStrat()">${ic('plus')}New strategy</button>`)+
  `<div class="sg">${S.length?S.map(x=>{const s=st(T.filter(t=>t.strat===x.name));return `<div class="card sc"><div class="row sb"><h3>${esc(x.name)}</h3><button class="btn sm" onclick="openStrat(${x.id})" aria-label="Edit strategy">${ic('gear')}</button></div><p class="mu" style="margin-top:4px">${esc(x.desc)}</p><ul>${String(x.rules||'').split('\n').filter(Boolean).map(r=>`<li>${esc(r)}</li>`).join('')}</ul><div class="row sb"><span class="mu">${s.n} trades</span><span class="mono">${s.n?pc(s.wr):'—'}</span><b class="mono ${cl(s.net)}">${s.n?m(s.net,1):'—'}</b></div></div>`}).join(''):'<div class="card empty">No strategies yet.</div>'}</div>`;
 
-pages.guide=()=>{post.push(chartGuideFill);const cats=LC.map(x=>`<button class="btn sm ${x===lcat?'on':''}" onclick="setLc('${x}')">${x}</button>`).join(''),videos=VL.filter(v=>videoCategory==='All'||v.category===videoCategory),sections=[['reference','Reference library',`${LI.length} topics`],['videos','Video Learning',`${VL.length} videos`],['charts','Chart Tools Guide',`${CT.length} tools`]];
+pages.guide=()=>{post.push(chartGuideFill);const cats=LC.map(x=>`<button class="btn sm ${x===lcat?'on':''}" onclick="setLc(${jsArg(x)})" aria-pressed="${x===lcat}">${esc(x)}</button>`).join(''),videos=VL.filter(v=>videoCategory==='All'||v.category===videoCategory),sections=[['reference','Reference library',`${LI.length} topics`],['videos','Video Learning',`${VL.length} videos`],['charts','Chart Tools Guide',`${CT.length} tools`]];
  return ph('Guid','Learning material for market basics, chart reading, and the chart tools you use')+
  `<div class="guide-tabs" role="group" aria-label="Choose a learning section">${sections.map(([key,title,detail])=>`<button class="btn guide-tab ${guideSection===key?'on':''}" onclick="setGuideSection('${key}')" aria-pressed="${guideSection===key}"><span>${title}</span><small>${detail}</small></button>`).join('')}</div>
- <section class="guide-panel" ${guideSection==='reference'?'':'hidden'} aria-labelledby="guide-reference-title"><h2 id="guide-reference-title">Reference library</h2><div class="row" style="margin-bottom:14px">${cats}</div><div class="sg">${LI.filter(i=>lcat==='All'||i[0]===lcat).map(i=>`<div class="card lc">${i[2]}<h3>${i[1]}</h3><p>${i[3]}</p></div>`).join('')}</div></section>
- <section class="vsec guide-panel" ${guideSection==='videos'?'':'hidden'} aria-labelledby="video-learning-title"><div class="vhead"><div><h2 id="video-learning-title">Video Learning</h2><p class="mu">A hand-picked watchlist from trusted investor-education sources to build your market knowledge.</p></div><span class="tag">${VL.length} lessons</span></div><div class="vfilters" role="group" aria-label="Filter videos by topic">${VLC.map(category=>{const count=category==='All'?VL.length:VL.filter(v=>v.category===category).length;return `<button class="btn sm vfilter ${videoCategory===category?'on':''}" onclick="setVideoCat('${category}')" aria-pressed="${videoCategory===category}">${category}<span class="vfilter-count">${count}</span></button>`}).join('')}</div><p class="mu" style="font-size:12px;margin:0 0 12px" aria-live="polite">Showing ${videos.length} videos</p><div class="vgrid">${videos.map(v=>`<article class="card vcard"><a class="vthumb" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener noreferrer" aria-label="Watch ${v.title} on YouTube"><img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="" loading="lazy"><span class="vplay"><i>${ic('play')}</i></span><span class="vdur">${v.duration}</span></a><div class="vbody"><span class="vtag">${v.category}</span><h3>${v.title}</h3><p>${v.desc}</p><div class="vfoot"><span class="vsource">${v.source||'Zerodha Varsity'}</span><div class="row" style="gap:10px"><a class="vlink" href="${v.lesson}" target="_blank" rel="noopener noreferrer">Lesson</a><a class="vlink" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener noreferrer">Watch video ${ic('cr')}</a></div></div></div></article>`).join('')}</div><p class="mu" style="font-size:12px;margin-top:12px">For education only—not investment advice or a recommendation to buy or sell any security.</p></section>
- <section class="vsec guide-panel" ${guideSection==='charts'?'':'hidden'} aria-labelledby="chart-tools-title"><div class="vhead"><div><h2 id="chart-tools-title">Chart Tools Guide</h2><p class="mu">Search and filter the 73 illustrated chart tools and controls.</p></div></div><div class="card ctintro"><p>A practical guide to the drawing tools and chart controls in TradingView-style charts, including the Fibonacci and Gann tools, lines, patterns, measurements, annotations, and drawing controls.</p><div class="ctcallout" style="margin-top:14px"><b>Good charting practice:</b> drawings help describe a hypothesis; they do not predict prices or place orders. Use a written setup, clear invalidation and defined risk.</div></div>
+ <section class="guide-panel" ${guideSection==='reference'?'':'hidden'} aria-labelledby="guide-reference-title"><h2 id="guide-reference-title">Reference library</h2><div class="row" style="margin-bottom:14px">${cats}</div><div class="sg">${LI.filter(i=>lcat==='All'||i[0]===lcat).map(i=>`<div class="card lc">${i[2]}<h3>${esc(i[1])}</h3><p>${esc(i[3])}</p></div>`).join('')||'<div class="card empty">No reference topics have been added yet.</div>'}</div></section>
+ <section class="vsec guide-panel" ${guideSection==='videos'?'':'hidden'} aria-labelledby="video-learning-title"><div class="vhead"><div><h2 id="video-learning-title">Video Learning</h2><p class="mu">A hand-picked watchlist from trusted investor-education sources to build your market knowledge.</p></div><span class="tag">${VL.length} lessons</span></div><div class="vfilters" role="group" aria-label="Filter videos by topic">${VLC.map(category=>{const count=category==='All'?VL.length:VL.filter(v=>v.category===category).length;return `<button class="btn sm vfilter ${videoCategory===category?'on':''}" onclick="setVideoCat(${jsArg(category)})" aria-pressed="${videoCategory===category}">${esc(category)}<span class="vfilter-count">${count}</span></button>`}).join('')}</div><p class="mu" style="font-size:12px;margin:0 0 12px" aria-live="polite">Showing ${videos.length} videos</p><div class="vgrid">${videos.map(v=>`<article class="card vcard"><a class="vthumb" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener noreferrer" aria-label="Watch ${esc(v.title)} on YouTube"><img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="" loading="lazy"><span class="vplay"><i>${ic('play')}</i></span><span class="vdur">${esc(v.duration)}</span></a><div class="vbody"><span class="vtag">${esc(v.category)}</span><h3>${esc(v.title)}</h3><p>${esc(v.desc)}</p><div class="vfoot"><span class="vsource">${esc(v.source||'Zerodha Varsity')}</span><div class="row" style="gap:10px"><a class="vlink" href="${esc(v.lesson)}" target="_blank" rel="noopener noreferrer">Lesson</a><a class="vlink" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener noreferrer">Watch video ${ic('cr')}</a></div></div></div></article>`).join('')||'<div class="card empty">No videos have been added to this library yet.</div>'}</div><p class="mu" style="font-size:12px;margin-top:12px">For education only—not investment advice or a recommendation to buy or sell any security.</p></section>
+ <section class="vsec guide-panel" ${guideSection==='charts'?'':'hidden'} aria-labelledby="chart-tools-title"><div class="vhead"><div><h2 id="chart-tools-title">Chart Tools Guide</h2><p class="mu">Search and filter the ${CT.length} illustrated chart tools and controls.</p></div></div><div class="card ctintro"><p>A practical guide to the drawing tools and chart controls in TradingView-style charts, including the Fibonacci and Gann tools, lines, patterns, measurements, annotations, and drawing controls.</p><div class="ctcallout" style="margin-top:14px"><b>Good charting practice:</b> drawings help describe a hypothesis; they do not predict prices or place orders. Use a written setup, clear invalidation and defined risk.</div></div>
  <div class="row sb" style="margin:18px 0 8px"><label class="ctsearch">${ic('search')}<span hidden>Search chart tools</span><input type="search" value="${esc(chartSearch)}" placeholder="Search tools, uses, or tips…" oninput="chartSearch=this.value;chartGuideFill()"></label><span id="ctCount" class="mu" aria-live="polite"></span></div>
- <div class="ctfilters" role="group" aria-label="Filter chart tools by category">${['All',...CTG].map(group=>{const count=group==='All'?CT.length:CT.filter(t=>t[0]===group).length;return `<button class="btn sm ${chartGroup===group?'on':''}" onclick="setChartGroup('${group}')" aria-pressed="${chartGroup===group}">${group} <span class="vfilter-count">${count}</span></button>`}).join('')}</div>
- <div id="ctGuideGrid">${CTG.map(group=>`<section class="ctgroup" data-group="${group}"><h2>${group}</h2><div class="ctgrid">${CT.filter(t=>t[0]===group).map(t=>`<article class="card ctcard"><div class="ctvisual">${chartToolVisual(t)}</div><span class="ctlabel">${group}</span><h3>${t[1]}</h3><p><b>What it does:</b> ${t[2]}</p><p><b>How to use it:</b> ${t[3]}</p><p><b>Learning tip:</b> ${t[4]}</p></article>`).join('')}</div></section>`).join('')}</div><div class="card empty" id="ctEmpty" hidden>No tools match that search. Try another word or choose All.</div><p class="mu" style="font-size:12px;margin-top:14px">Diagrams are simplified illustrations, not exact platform icons, live price data, or signals. Tool names and menu placement may differ slightly between TradingView, broker-integrated charts, web, and mobile. Check your chart’s own settings for exact controls.</p></section>`};
+ <div class="ctfilters" role="group" aria-label="Filter chart tools by category">${['All',...CTG].map(group=>{const count=group==='All'?CT.length:CT.filter(t=>t[0]===group).length;return `<button class="btn sm ${chartGroup===group?'on':''}" onclick="setChartGroup(${jsArg(group)})" aria-pressed="${chartGroup===group}">${esc(group)} <span class="vfilter-count">${count}</span></button>`}).join('')}</div>
+ <div id="ctGuideGrid">${CTG.map(group=>`<section class="ctgroup" data-group="${esc(group)}"><h2>${esc(group)}</h2><div class="ctgrid">${CT.filter(t=>t[0]===group).map(t=>`<article class="card ctcard"><div class="ctvisual">${chartToolVisual(t)}</div><span class="ctlabel">${esc(group)}</span><h3>${esc(t[1])}</h3><p><b>What it does:</b> ${esc(t[2])}</p><p><b>How to use it:</b> ${esc(t[3])}</p><p><b>Learning tip:</b> ${esc(t[4])}</p></article>`).join('')}</div></section>`).join('')}</div><div class="card empty" id="ctEmpty" hidden>No tools match that search. Try another word or choose All.</div><p class="mu" style="font-size:12px;margin-top:14px">Diagrams are simplified illustrations, not exact platform icons, live price data, or signals. Tool names and menu placement may differ slightly between TradingView, broker-integrated charts, web, and mobile. Check your chart’s own settings for exact controls.</p></section>`};
 
 pages.notes=()=>{post.push(nfill);return ph('Trade Notes','Learnings and mistakes from your trades, plus your own notes')+
  `<div class="card" style="margin-bottom:16px"><h2>New note</h2><div class="fg"><label>Title<input id="nt"></label><label class="wide">Note<textarea id="nb"></textarea></label></div><div style="margin-top:12px"><button class="btn pr" onclick="addNote()">${ic('plus')}Save note</button></div></div>
@@ -525,6 +570,120 @@ pages.notes=()=>{post.push(nfill);return ph('Trade Notes','Learnings and mistake
 function nfill(){const el=$('#nl');if(!el)return;const items=[...N.map(n=>({k:'Note',d:n.date,t:n.title,b:n.body,nid:n.id})),...T.flatMap(t=>[t.learn&&{k:'Learning',d:t.date,t:t.symbol,b:t.learn,tid:t.id},t.mist&&{k:'Mistake',d:t.date,t:t.symbol,b:t.mist,tid:t.id}].filter(Boolean))]
  .filter(i=>(nf==='All'||i.k===nf)&&(!nq||`${i.t} ${i.b}`.toLowerCase().includes(nq.toLowerCase()))).sort((a,b)=>b.d.localeCompare(a.d));
  el.innerHTML=items.length?items.map(i=>`<div class="card" style="margin-bottom:12px"><div class="row sb"><div class="row"><span class="tag ${i.k==='Mistake'?'neg':i.k==='Learning'?'pos':''}">${i.k}</span><b>${esc(i.t)}</b><span class="mu mono" style="font-size:12px">${i.d}</span></div>${i.nid?`<button class="btn sm dg" onclick="delNote(${i.nid})">Delete</button>`:`<button class="btn sm" onclick="openTrade(${i.tid})">Open trade</button>`}</div><p style="margin-top:8px;white-space:pre-wrap">${esc(i.b)}</p></div>`).join(''):'<div class="card empty">Nothing here yet. Add learnings and mistakes to your trades, or write a note above.</div>'}
+function adminLearningList(){
+ if(adminLearningKind==='videos')return VL.map((v,i)=>`<article class="card row sb" style="margin-bottom:10px"><div class="row"><img src="https://i.ytimg.com/vi/${v.id}/default.jpg" alt="" width="96" height="54" loading="lazy" style="object-fit:cover;border-radius:6px"><div><b>${esc(v.title)}</b><div class="mu">${esc(v.category)} · ${esc(v.duration)}</div></div></div><div class="row"><button class="btn sm" onclick="editAdminLearningEntry(${i})">Edit</button><button class="btn sm dg" onclick="deleteAdminLearningEntry(${i})">Delete</button></div></article>`).join('');
+ if(adminLearningKind==='reference')return LI.map((v,i)=>`<article class="card row sb" style="margin-bottom:10px"><div><b>${esc(v[1])}</b><div class="mu">${esc(v[0])}</div><p class="mu" style="margin-top:4px">${esc(v[3])}</p></div><div class="row"><button class="btn sm" onclick="editAdminLearningEntry(${i})">Edit</button><button class="btn sm dg" onclick="deleteAdminLearningEntry(${i})">Delete</button></div></article>`).join('');
+ return CT.map((v,i)=>`<article class="card row sb" style="margin-bottom:10px"><div><b>${esc(v[1])}</b><div class="mu">${esc(v[0])}</div><p class="mu" style="margin-top:4px">${esc(v[2])}</p></div><div class="row"><button class="btn sm" onclick="editAdminLearningEntry(${i})">Edit</button><button class="btn sm dg" onclick="deleteAdminLearningEntry(${i})">Delete</button></div></article>`).join('');
+}
+function adminLearningForm(){
+ if(adminEditingIndex===null)return'';
+ const current=adminEditingIndex<0?null:adminLearningKind==='videos'?VL[adminEditingIndex]:adminLearningKind==='reference'?LI[adminEditingIndex]:CT[adminEditingIndex];
+ if(adminLearningKind==='videos'){
+  const v=current||{id:'',title:'',category:'Market basics',duration:'',desc:'',source:'Zerodha Varsity',lesson:''};
+  return`<form class="card" id="adminLearningForm" onsubmit="saveAdminLearningEntry(event)"><h3>${current?'Edit video':'Add a YouTube video'}</h3><div class="fg" style="margin-top:12px"><label class="wide">YouTube video link<input name="videoUrl" type="url" required placeholder="https://youtu.be/…" value="${esc(v.id?`https://www.youtube.com/watch?v=${v.id}`:'')}"></label><label>Title<input name="title" maxlength="160" required value="${esc(v.title)}"></label><label>Topic category<input name="category" maxlength="60" required value="${esc(v.category)}"></label><label>Duration<input name="duration" maxlength="20" required placeholder="e.g. 8:42" value="${esc(v.duration)}"></label><label>Source<input name="source" maxlength="100" required value="${esc(v.source||'YouTube')}"></label><label class="wide">Description<textarea name="desc" maxlength="1000" required>${esc(v.desc)}</textarea></label><label class="wide">Optional lesson link (HTTPS)<input name="lesson" type="url" value="${esc(v.lesson||'')}"></label></div><div class="row" style="margin-top:12px"><button class="btn pr" type="submit">Save video</button><button class="btn" type="button" onclick="cancelAdminLearningEdit()">Cancel</button></div></form>`;
+ }
+ if(adminLearningKind==='reference'){
+  const v=current||['Candlesticks','','',''];
+  return`<form class="card" id="adminLearningForm" onsubmit="saveAdminLearningEntry(event)"><h3>${current?'Edit reference topic':'Add a reference topic'}</h3><div class="fg" style="margin-top:12px"><label>Category<input name="category" maxlength="60" required value="${esc(v[0])}"></label><label>Topic title<input name="title" maxlength="160" required value="${esc(v[1])}"></label><label class="wide">Explanation<textarea name="description" maxlength="1500" required>${esc(v[3])}</textarea></label></div><p class="mu" style="margin-top:8px">Existing illustrations are retained when a topic keeps its title and category; new topics use a clean text-first card.</p><div class="row" style="margin-top:12px"><button class="btn pr" type="submit">Save topic</button><button class="btn" type="button" onclick="cancelAdminLearningEdit()">Cancel</button></div></form>`;
+ }
+ const v=current||['Chart basics','','','',''];
+ return`<form class="card" id="adminLearningForm" onsubmit="saveAdminLearningEntry(event)"><h3>${current?'Edit chart tool':'Add a chart tool'}</h3><div class="fg" style="margin-top:12px"><label>Category<input name="category" maxlength="60" required value="${esc(v[0])}"></label><label>Tool name<input name="title" maxlength="160" required value="${esc(v[1])}"></label><label class="wide">What it does<textarea name="what" maxlength="1000" required>${esc(v[2])}</textarea></label><label class="wide">How to use it<textarea name="how" maxlength="1000" required>${esc(v[3])}</textarea></label><label class="wide">Learning tip<textarea name="tip" maxlength="1000" required>${esc(v[4])}</textarea></label></div><div class="row" style="margin-top:12px"><button class="btn pr" type="submit">Save chart tool</button><button class="btn" type="button" onclick="cancelAdminLearningEdit()">Cancel</button></div></form>`;
+}
+function pagesAdminLearning(){
+ const kinds=[['videos','Videos'],['reference','Reference library'],['charts','Chart Tools Guide']],tabs=kinds.map(([key,label])=>`<button class="btn sm ${adminLearningKind===key?'on':''}" onclick="setAdminLearningKind(${jsArg(key)})">${label}</button>`).join('');
+ return`<div class="card" style="margin-bottom:16px"><div class="row sb"><div><h2 style="margin:0">Learning content</h2><p class="mu" style="margin-top:5px">Changes are published for every signed-in learner.</p></div><button class="btn sm" onclick="seedAdminLearning()">Restore built-in library</button></div>${siteContentError?`<p class="auth-error" role="status">${esc(siteContentError)}</p>`:''}${!siteContentSeeded?'<p class="mu" style="margin-top:10px">The built-in content is shown until you save or restore the library to the shared site database.</p>':''}</div><div class="row" style="margin-bottom:14px">${tabs}<button class="btn pr" onclick="startAdminLearningEntry()">Add ${adminLearningKind==='videos'?'video':adminLearningKind==='reference'?'topic':'chart tool'}</button></div>${adminLearningForm()}<div style="margin-top:14px">${adminLearningList()||'<div class="card empty">No items in this section yet.</div>'}</div>`;
+}
+function pagesAdminUsers(){
+ if(!adminUsersLoaded&&!adminUsersLoading)post.push(loadAdminUsers);
+ const selected=adminSelectedUser&&adminUsers.find(u=>u.user_id===adminSelectedUser);
+ const list=adminUsersLoading?'<div class="card empty">Loading user accounts…</div>':adminUsersError?`<div class="card"><p class="auth-error">${esc(adminUsersError)}</p><button class="btn sm" onclick="loadAdminUsers()">Retry</button></div>`:adminUsers.map(u=>`<article class="card row sb" style="margin-bottom:10px"><div><b>${esc(u.display_name||'No profile name')}</b><div class="mu">${esc(u.email||'')}</div><small class="mu">Joined ${new Date(u.created_at).toLocaleDateString()} · ${u.has_journal?'Journal saved':'No journal yet'}</small></div><div class="row"><button class="btn sm" onclick="openAdminJournal(${jsArg(u.user_id)})">Manage journal</button><button class="btn sm dg" ${u.user_id===authUser?.id?'disabled':''} onclick="deleteAdminUser(${jsArg(u.user_id)})">Delete account</button></div></article>`).join('')||'<div class="card empty">No accounts were returned.</div>';
+ const editor=selected?`<div class="card" style="margin:16px 0"><div class="row sb"><div><h2 style="margin:0">Journal: ${esc(selected.email||'')}</h2><p class="mu" style="margin-top:5px">Editing this record changes that user’s private journal.</p></div><button class="btn sm" onclick="downloadAdminJournal()">Download JSON</button></div>${adminJournalLoading?'<p class="mu" style="margin-top:12px">Loading journal…</p>':`<label style="margin-top:12px">Journal JSON<textarea id="adminJournalJson" style="min-height:300px;font-family:monospace">${esc(adminJournalText)}</textarea></label>`}${adminJournalError?`<p class="auth-error" role="status">${esc(adminJournalError)}</p>`:''}<div class="row" style="margin-top:12px"><button class="btn pr" onclick="saveAdminJournal()">Save journal</button><button class="btn dg" onclick="deleteAdminJournal()">Delete journal data</button><button class="btn" onclick="closeAdminJournal()">Close</button></div></div>`:'';
+ return`<div class="card" style="margin-bottom:14px"><h2>Users and private journals</h2><p class="mu">You can see and edit account journals here. Ask a user to reload after an admin edit before continuing to trade or sync, so an already-open older copy does not overwrite the change. Deleting an account permanently removes its journal and cannot be undone. Your own admin account is protected from deletion.</p><div class="row" style="margin-top:10px"><button class="btn sm" onclick="loadAdminUsers()">Refresh users</button></div></div>${editor}${list}`;
+}
+function parseYoutubeId(value){
+ try{const u=new URL(value);if(u.protocol!=='https:')throw new Error();const host=u.hostname.toLowerCase();if(host==='youtu.be'){const id=u.pathname.split('/').filter(Boolean)[0];if(/^[-\w]{11}$/.test(id||''))return id}
+  if(['youtube.com','www.youtube.com','m.youtube.com','music.youtube.com'].includes(host)){const id=u.searchParams.get('v')||u.pathname.match(/^\/(?:embed|shorts)\/([-\w]{11})(?:\/|$)/)?.[1];if(/^[-\w]{11}$/.test(id||''))return id}
+ }catch{}throw new Error('Paste a valid HTTPS YouTube watch, short, or embed link.');
+}
+async function persistAdminLearningContent(content){
+ if(!isAdmin){showToast('This account is not authorized to edit learning content.');return false}
+ try{const checked=normalizeLearningContent(content),clean={videos:checked.videos.map(({id,lesson,title,category,duration,desc,source})=>({id,lesson,title,category,duration,desc,source})),referenceTopics:checked.referenceTopics.map(([category,title,,description])=>({category,title,description})),chartTools:checked.chartTools.map(([category,title,what,how,tip])=>({category,title,what,how,tip}))};
+  const{error}=await supabaseClient.from('site_content').upsert({id:'learning',content:clean,updated_by:authUser.id,updated_at:new Date().toISOString()},{onConflict:'id'});if(error)throw error;
+  applyLearningContent(clean);siteContentSeeded=true;siteContentError='';showToast('Learning content published for all users.');render();return true
+ }catch(error){siteContentError=error.message||String(error);showToast(`Could not save learning content: ${siteContentError}`);render();return false}
+}
+async function seedAdminLearning(){
+ if(!isAdmin)return;
+ if(!confirm('Replace the shared learning library with the original built-in videos, reference topics, and chart tools?'))return;
+ const content={videos:DEFAULT_VL.map(({id,lesson,title,category,duration,desc,source})=>({id,lesson,title,category,duration,desc,source})),referenceTopics:DEFAULT_LI.map(([category,title,,description])=>({category,title,description})),chartTools:DEFAULT_CT.map(([category,title,what,how,tip])=>({category,title,what,how,tip}))};
+ await persistAdminLearningContent(content)
+}
+function setAdminLearningKind(kind){adminLearningKind=kind;adminEditingIndex=null;render()}
+function startAdminLearningEntry(){adminEditingIndex=-1;render()}
+function editAdminLearningEntry(index){adminEditingIndex=index;render()}
+function cancelAdminLearningEdit(){adminEditingIndex=null;render()}
+async function saveAdminLearningEntry(event){
+ event.preventDefault();if(!isAdmin)return;
+ const form=event.currentTarget,data=new FormData(form),value=name=>String(data.get(name)||'').trim(),next=learningContentPayload();
+ try{
+  if(adminLearningKind==='videos'){
+   const id=parseYoutubeId(value('videoUrl')),lesson=value('lesson')||`https://www.youtube.com/watch?v=${id}`,entry={id,lesson,title:value('title'),category:value('category'),duration:value('duration'),desc:value('desc'),source:value('source')||'YouTube'};
+   const items=[...next.videos];if(adminEditingIndex<0)items.push(entry);else items[adminEditingIndex]=entry;next.videos=items
+  }else if(adminLearningKind==='reference'){
+   const entry={category:value('category'),title:value('title'),description:value('description')},items=[...next.referenceTopics];if(adminEditingIndex<0)items.push(entry);else items[adminEditingIndex]=entry;next.referenceTopics=items
+  }else{
+   const entry={category:value('category'),title:value('title'),what:value('what'),how:value('how'),tip:value('tip')},items=[...next.chartTools];if(adminEditingIndex<0)items.push(entry);else items[adminEditingIndex]=entry;next.chartTools=items
+  }
+  if(await persistAdminLearningContent(next)){adminEditingIndex=null;render()}
+ }catch(error){siteContentError=error.message||String(error);showToast(siteContentError);render()}
+}
+async function deleteAdminLearningEntry(index){
+ if(!isAdmin)return;const label=adminLearningKind==='videos'?VL[index]?.title:adminLearningKind==='reference'?LI[index]?.[1]:CT[index]?.[1];
+ if(!confirm(`Delete "${label||'this item'}" from the shared learning library?`))return;
+ const next=learningContentPayload();if(adminLearningKind==='videos')next.videos.splice(index,1);else if(adminLearningKind==='reference')next.referenceTopics.splice(index,1);else next.chartTools.splice(index,1);
+ await persistAdminLearningContent(next)
+}
+async function loadAdminUsers(){
+ if(!isAdmin||adminUsersLoading)return;
+ const viewerId=authUser.id;adminUsersLoading=true;adminUsersError='';adminUsersLoaded=false;render();
+ try{const{data,error}=await supabaseClient.rpc('admin_list_users');if(error)throw error;if(authUser?.id===viewerId&&isAdmin){adminUsers=Array.isArray(data)?data:[];adminUsersLoaded=true}}
+ catch(error){if(authUser?.id===viewerId&&isAdmin){adminUsersError=error.message||String(error);adminUsersLoaded=true}}
+ finally{if(authUser?.id===viewerId){adminUsersLoading=false;if(location.hash==='#admin'&&adminTab==='users')render()}}
+}
+async function openAdminJournal(userId){
+ if(!isAdmin)return;const viewerId=authUser.id;adminSelectedUser=userId;adminJournalLoading=true;adminJournalError='';adminJournalText='';render();
+ try{const{data,error}=await supabaseClient.from('journal_data').select('trades,strategies,notes,settings').eq('user_id',userId).maybeSingle();if(error)throw error;if(adminSelectedUser===userId&&authUser?.id===viewerId&&isAdmin)adminJournalText=JSON.stringify(data||{trades:[],strategies:[],notes:[],settings:{}},null,2)}
+ catch(error){if(adminSelectedUser===userId&&authUser?.id===viewerId)adminJournalError=error.message||String(error)}
+ finally{if(adminSelectedUser===userId&&authUser?.id===viewerId){adminJournalLoading=false;if(location.hash==='#admin')render()}}
+}
+function closeAdminJournal(){adminSelectedUser=null;adminJournalLoading=false;adminJournalText='';adminJournalError='';render()}
+async function saveAdminJournal(){
+ if(!isAdmin||!adminSelectedUser)return;const viewerId=authUser.id,targetId=adminSelectedUser,raw=$('#adminJournalJson')?.value??adminJournalText;
+ adminJournalText=raw;
+ try{if(raw.length>2_000_000)throw new Error('Journal JSON is too large to save.');const data=JSON.parse(raw);if(!data||typeof data!=='object'||Array.isArray(data)||!Array.isArray(data.trades)||!Array.isArray(data.strategies)||!Array.isArray(data.notes)||!data.settings||typeof data.settings!=='object'||Array.isArray(data.settings))throw new Error('Use an object with trades, strategies, and notes arrays plus a settings object.');
+  const{error}=await supabaseClient.from('journal_data').upsert({user_id:targetId,trades:data.trades,strategies:data.strategies,notes:data.notes,settings:data.settings},{onConflict:'user_id'});if(error)throw error;if(authUser?.id!==viewerId||!isAdmin||adminSelectedUser!==targetId)return;adminJournalText=JSON.stringify(data,null,2);adminJournalError='';adminUsers=adminUsers.map(u=>u.user_id===targetId?{...u,has_journal:true}:u);showToast('User journal saved.');render()
+ }catch(error){if(authUser?.id===viewerId&&adminSelectedUser===targetId){adminJournalError=error.message||String(error);render()}}
+}
+async function deleteAdminJournal(){
+ if(!isAdmin||!adminSelectedUser)return;const user=adminUsers.find(u=>u.user_id===adminSelectedUser);if(!confirm(`Permanently delete the journal data for ${user?.email||'this user'}? Their account will remain.`))return;
+ const viewerId=authUser.id,targetId=adminSelectedUser;
+ try{const{error}=await supabaseClient.from('journal_data').delete().eq('user_id',targetId);if(error)throw error;if(authUser?.id!==viewerId||!isAdmin||adminSelectedUser!==targetId)return;adminJournalText=JSON.stringify({trades:[],strategies:[],notes:[],settings:{}},null,2);adminUsers=adminUsers.map(u=>u.user_id===targetId?{...u,has_journal:false}:u);showToast('User journal deleted.');render()}
+ catch(error){if(authUser?.id===viewerId&&adminSelectedUser===targetId){adminJournalError=error.message||String(error);render()}}
+}
+function downloadAdminJournal(){if(!isAdmin||!adminSelectedUser)return;const user=adminUsers.find(u=>u.user_id===adminSelectedUser),name=String(user?.email||'user').replace(/[^a-z0-9._-]/gi,'_');dl(`journal-${name}.json`,$('#adminJournalJson')?.value||adminJournalText,'application/json')}
+async function deleteAdminUser(userId){
+ if(!isAdmin||userId===authUser?.id)return;const user=adminUsers.find(u=>u.user_id===userId);if(!user)return;
+ if(!confirm(`Permanently delete ${user.email||'this user'} and all of their journal data? This cannot be undone.`))return;
+ const viewerId=authUser.id;
+ try{const{error}=await supabaseClient.rpc('admin_delete_user',{target_user_id:userId});if(error)throw error;if(authUser?.id!==viewerId||!isAdmin)return;adminUsers=adminUsers.filter(u=>u.user_id!==userId);if(adminSelectedUser===userId)closeAdminJournal();else render();showToast('User account and journal permanently deleted.')}
+ catch(error){if(authUser?.id===viewerId){adminUsersError=error.message||String(error);showToast(`Could not delete user: ${adminUsersError}`);render()}}
+}
+pages.admin=()=>{
+ if(!adminCandidate())return ph('Admin','This account is not authorized to manage the site')+'<div class="card">Sign in with the designated administrator account.</div>';
+ if(!isAdmin)return ph('Admin','Administrator setup required')+`<div class="card"><h2>Enable secure administrator access</h2><p class="mu">Run <b>supabase/admin.sql</b> once in your Supabase SQL Editor, then sign out and sign back in. The database checks the confirmed account email before allowing any admin action.</p>${adminAccessError?`<p class="auth-error" role="status">${esc(adminAccessError)}</p>`:''}</div>`;
+ const tabs=[['learning','Learning content'],['users','User management']].map(([key,title])=>`<button class="btn ${adminTab===key?'on':''}" onclick="setAdminTab(${jsArg(key)})">${title}</button>`).join('');
+ return ph('Admin','Manage learning materials, user accounts, and private journals')+`<div class="row" style="margin-bottom:16px">${tabs}</div>${adminTab==='learning'?pagesAdminLearning():pagesAdminUsers()}`;
+};
 pages.settings=()=>ph('Settings','Account, appearance and your data')+
  `<div class="g g11"><div class="card"><h2>Profile</h2><p class="mu account-email">${esc(authUser?.email||'')}</p><form onsubmit="saveProfile(event)" style="margin-top:12px"><label>Display name<input id="profileName" maxlength="80" value="${esc(authUser?.user_metadata?.display_name||'')}" autocomplete="name" required></label><div class="row" style="margin-top:10px"><button class="btn" type="submit">Save profile</button><button class="btn" type="button" onclick="sendPasswordReset()">Change password</button><button class="btn dg" type="button" onclick="signOut()">Sign out</button></div></form></div>
  <div class="card"><h2>Cloud sync</h2><p class="mu">Your journal is stored in your signed-in account. Other users cannot access it.</p><div id="syncState" class="sync-state" role="status" aria-live="polite">Synced</div><button class="btn sm" style="margin-top:8px" onclick="retryCloudSave()">Retry sync</button></div></div>
@@ -533,7 +692,8 @@ pages.settings=()=>ph('Settings','Account, appearance and your data')+
 
 // ---- router
 function render(){const requested=location.hash.slice(1),pg=requested==='chart-guide'?'guide':pages[requested]?requested:'dashboard';if(requested==='chart-guide')history.replaceState(null,'','#guide');post=[];
- $('#side').innerHTML=`<div class="brand"><div class="logo">${ic('up')}</div><span>Trading Journal</span></div>`+NAV.map(([h,i,l])=>`<a href="#${h}" class="${h===pg?'on':''}" ${h===pg?'aria-current="page"':''} title="${l}">${ic(i)}<span>${l}</span></a>`).join('')+`<div class="sp"></div><div class="account-footer"><b>${esc(authUser?.user_metadata?.display_name||'')}</b><small class="account-email">${esc(authUser?.email||'')}</small></div><button class="btn tt" id="tm2" onclick="flip()" aria-label="Toggle theme"></button>`;
+ const navItems=isAdmin||adminCandidate()?[...NAV,['admin','gear','Admin']]:NAV;
+ $('#side').innerHTML=`<div class="brand"><div class="logo">${ic('up')}</div><span>Trading Journal</span></div>`+navItems.map(([h,i,l])=>`<a href="#${h}" class="${h===pg?'on':''}" ${h===pg?'aria-current="page"':''} title="${l}">${ic(i)}<span>${l}</span></a>`).join('')+`<div class="sp"></div><div class="account-footer"><b>${esc(authUser?.user_metadata?.display_name||'')}</b><small class="account-email">${esc(authUser?.email||'')}</small></div><button class="btn tt" id="tm2" onclick="flip()" aria-label="Toggle theme"></button>`;
  $('#pg').innerHTML=pages[pg]();applyTheme();post.forEach(f=>f())}
 function chartGuideFill(){const root=$('#ctGuideGrid');if(!root)return;const q=chartSearch.trim().toLowerCase();let total=0;
  root.querySelectorAll('.ctgroup').forEach(section=>{let count=0;section.querySelectorAll('.ctcard').forEach(card=>{const show=(chartGroup==='All'||section.dataset.group===chartGroup)&&(!q||card.textContent.toLowerCase().includes(q));card.hidden=!show;if(show){count++;total++}});section.hidden=count===0});
@@ -541,7 +701,7 @@ function chartGuideFill(){const root=$('#ctGuideGrid');if(!root)return;const q=c
 addEventListener('hashchange',()=>{render();scrollTo(0,0)});let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(render,150)});
 
 // ---- actions
-const setPer=k=>{per=k;render()},setPm=k=>{pm=k;render()},setNf=k=>{nf=k;render()},setLc=k=>{lcat=k;render()},setVideoCat=k=>{videoCategory=k;render()},setChartGroup=k=>{chartGroup=k;render()},setGuideSection=k=>{guideSection=k;render()},setTheme=k=>{C.theme=k;persist();render()};
+const setPer=k=>{per=k;render()},setPm=k=>{pm=k;render()},setNf=k=>{nf=k;render()},setLc=k=>{lcat=k;render()},setVideoCat=k=>{videoCategory=k;render()},setChartGroup=k=>{chartGroup=k;render()},setGuideSection=k=>{guideSection=k;render()},setAdminTab=k=>{adminTab=k;if(k==='users')adminUsersLoaded=false;render()},setTheme=k=>{C.theme=k;persist();render()};
 const fset=(k,v)=>{F[k]=v;k==='q'?jfill():render()},cmv=n=>{cm=new Date(cm.getFullYear(),cm.getMonth()+n,1);cd=null;render()},selDay=k=>{cd=cd===k?null:k;render()};
 const zoomT=id=>{$('#lb img').src=T.find(t=>t.id===id).img;$('#lb').hidden=false};
 function addNote(){const t=$('#nt').value.trim(),b=$('#nb').value.trim();if(!b)return;N.push({id:Date.now(),date:td(),title:t||'Note',body:b});persist();render()}
