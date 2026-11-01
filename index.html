@@ -55,7 +55,8 @@ dialog::backdrop{background:rgba(5,8,20,.55)}.dh{display:flex;justify-content:sp
 #lb{position:fixed;inset:0;background:rgba(5,8,20,.85);display:grid;place-items:center;z-index:40;cursor:zoom-out}#lb img{max-width:92%;max-height:92%;border-radius:10px}[hidden]{display:none!important}
 .thumb{width:150px;height:96px;object-fit:cover;border-radius:8px;border:1px solid var(--bd)}
 .bar{height:6px;border-radius:3px;background:var(--bd);overflow:hidden;min-width:70px}.bar i{display:block;height:100%}
-@media(max-width:1024px){#side{width:64px;align-items:center;padding:14px 8px}#side a span,.brand span{display:none}#side a{padding:10px}.brand{padding:2px 0 14px}main{margin-left:64px;padding:22px 20px 48px}.g2,.g11{grid-template-columns:1fr}}
+.auth-shell{min-height:100vh;display:grid;place-items:center;padding:24px}.auth-card{width:min(440px,100%);background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:26px;box-shadow:0 18px 50px #10172a12}.auth-card h1{margin-bottom:6px}.auth-card p{margin:0 0 18px}.auth-card form{display:grid;gap:14px}.auth-card .btn{justify-content:center}.auth-error{color:var(--r);min-height:1.5em}.auth-links{display:flex;justify-content:space-between;align-items:center;margin-top:14px}.auth-links button{border:0;background:none;color:var(--ac);font:inherit;cursor:pointer}.account-email{overflow-wrap:anywhere}.account-footer{display:grid;gap:2px;overflow:hidden;padding:10px 8px;font-size:12px}.account-footer small{color:var(--mu);overflow-wrap:anywhere}.sync-state{font-size:12px;color:var(--mu);margin-top:8px}.toast{position:fixed;right:16px;bottom:16px;z-index:60;max-width:min(420px,calc(100vw - 32px));padding:12px 16px;border:1px solid var(--bd);border-radius:10px;background:var(--sf);box-shadow:0 8px 30px #10172a24}
+@media(max-width:1024px){#side{width:64px;align-items:center;padding:14px 8px}#side a span,.brand span,.account-footer{display:none}#side a{padding:10px}.brand{padding:2px 0 14px}main{margin-left:64px;padding:22px 20px 48px}.g2,.g11{grid-template-columns:1fr}}
 @media(max-width:700px){#side{inset:auto 0 0 0;width:auto;height:58px;flex-direction:row;justify-content:space-around;border-right:0;border-top:1px solid var(--bd);padding:6px}#side .brand,#side .sp,#side .tt{display:none}#side a{padding:10px 11px}
  main{margin:0;padding:14px 14px 80px}.top{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--sf);border-bottom:1px solid var(--bd)}.top .brand{padding:0}
  .day{min-height:58px;padding:5px}.day small{display:none}.day b{font-size:10.5px}.kpi .kv{font-size:20px}.tb>*{flex:1 1 130px}}
@@ -63,6 +64,23 @@ dialog::backdrop{background:rgba(5,8,20,.55)}.dh{display:flex;justify-content:sp
 </style>
 </head>
 <body>
+<section id="authGate" class="auth-shell">
+ <div class="auth-card">
+  <div class="brand"><div class="logo" id="authLogo"></div><span>Trading Journal</span></div>
+  <h1 id="authTitle">Sign in</h1>
+  <p class="mu" id="authDescription">Sign in to access your private trading journal.</p>
+  <div id="authSetup" class="card" hidden></div>
+  <form id="authForm">
+   <label id="authNameWrap" hidden>Profile name<input id="authName" name="name" autocomplete="name" maxlength="80"></label>
+   <label id="authEmailWrap">Email<input id="authEmail" name="email" type="email" autocomplete="username" required></label>
+   <label id="authPasswordWrap">Password<input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="8" required></label>
+   <button id="authSubmit" class="btn pr" type="submit">Sign in</button>
+   <div id="authError" class="auth-error" role="status" aria-live="polite"></div>
+  </form>
+  <div id="authLinks" class="auth-links"><button id="authModeToggle" type="button">Create an account</button><button id="authForgot" type="button">Forgot password?</button></div>
+ </div>
+</section>
+<div id="appShell" hidden>
 <div class="top"><div class="brand"><div class="logo" id="lg1"></div>Trading Journal</div><button class="btn sm" onclick="flip()" aria-label="Toggle theme" id="tm1"></button></div>
 <nav id="side" aria-label="Main"></nav>
 <main><div class="wrap" id="pg"></div></main>
@@ -110,6 +128,10 @@ dialog::backdrop{background:rgba(5,8,20,.55)}.dh{display:flex;justify-content:sp
  <div class="df"><button type="button" class="btn dg" id="sDel" hidden>Delete</button><span style="flex:1"></span><button type="button" class="btn" onclick="sdlg.close()">Cancel</button><button class="btn pr" type="submit">Save strategy</button></div>
 </form></dialog>
 <input type="file" id="impF" accept=".json" hidden>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script>
 const $=(s,r=document)=>r.querySelector(s),R=document.documentElement,dlg=$('#dlg'),sdlg=$('#sdlg');
 const sv=i=>`<svg viewBox="0 0 200 100">${i}</svg>`,ST=(c,w=2.5,d='')=>`fill:none;stroke:${c};stroke-width:${w};stroke-linejoin:round;stroke-dasharray:${d}`;
@@ -174,10 +196,11 @@ const NAV=[['dashboard','dash','Dashboard'],['journal','book','Trade Journal'],[
 
 // ---- data
 const K={t:'tt_trades_v1',s:'tt_strats_v1',n:'tt_notes_v1',c:'tt_set_v1'};
-const ld=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}};
-let T=ld(K.t,[]),N=ld(K.n,[]),C=Object.assign({cur:'₹',cap:0,theme:'system'},ld(K.c,{}));
-let S=ld(K.s,[{id:1,name:'Trend pullback',desc:'Trade pullbacks to a moving average in the direction of the higher time frame trend.',rules:'Higher time frame trend agrees\nEntry near EMA or support\nRisk:reward at least 1:2'},{id:2,name:'Breakout',desc:'Enter when price closes beyond a well-tested level with volume.',rules:'Level tested at least twice\nClose beyond the level\nVolume above average'}]);
-const persist=()=>{try{localStorage.setItem(K.t,JSON.stringify(T));localStorage.setItem(K.s,JSON.stringify(S));localStorage.setItem(K.n,JSON.stringify(N));localStorage.setItem(K.c,JSON.stringify(C))}catch(e){alert('Browser storage is full. Remove some chart screenshots or export a backup.')}};
+let T=[],N=[],C={cur:'₹',cap:0,theme:'system'};
+const defaultStrategies=()=>[{id:1,name:'Trend pullback',desc:'Trade pullbacks to a moving average in the direction of the higher time frame trend.',rules:'Higher time frame trend agrees\nEntry near EMA or support\nRisk:reward at least 1:2'},{id:2,name:'Breakout',desc:'Enter when price closes beyond a well-tested level with volume.',rules:'Level tested at least twice\nClose beyond the level\nVolume above average'}];
+let S=defaultStrategies();
+let supabaseClient=null,authUser=null,authMode='login',syncTimer=null,syncQueue=Promise.resolve(),syncVersion=0,toastTimer=null,clearLegacyAfterSync=false;
+const persist=()=>{if(authUser)queueCloudSave()};
 const td=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
 const num=v=>parseFloat(v)||0,esc=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const m=(v,sg)=>`${v<0?'−':sg&&v>0?'+':''}${esc(C.cur)}${Math.abs(v).toLocaleString('en-IN',{maximumFractionDigits:2})}`;
@@ -190,6 +213,53 @@ function applyTheme(){R.dataset.theme=C.theme==='system'?(matchMedia('(prefers-c
 function flip(){C.theme=R.dataset.theme==='dark'?'light':'dark';persist();applyTheme();render()}
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(C.theme==='system'){applyTheme();render()}});
 $('#lg1').innerHTML=ic('up');$('#x1').innerHTML=ic('x');$('#x2').innerHTML=ic('x');
+$('#authLogo').innerHTML=ic('up');
+
+function showAuthMode(mode){authMode=mode;const isSignup=mode==='signup',isUpdate=mode==='update-password';
+ $('#authNameWrap').hidden=!isSignup;$('#authEmailWrap').hidden=isUpdate;$('#authEmail').required=!isUpdate;$('#authPasswordWrap').hidden=false;
+ $('#authTitle').textContent=isSignup?'Create your account':isUpdate?'Set a new password':'Sign in';
+ $('#authDescription').textContent=isSignup?'Create a private profile for your trading journal.':isUpdate?'Choose a new password for your account.':'Sign in to access your private trading journal.';
+ $('#authSubmit').textContent=isSignup?'Create account':isUpdate?'Save new password':'Sign in';
+ $('#authModeToggle').hidden=isUpdate;$('#authForgot').hidden=mode!=='login';$('#authModeToggle').textContent=isSignup?'Already have an account? Sign in':'Create an account';$('#authError').textContent=''}
+function showAuthGate(){ $('#appShell').hidden=true;$('#authGate').hidden=false}
+function showToast(message){const el=$('#toast');el.textContent=message;el.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.hidden=true},6000)}
+function setSyncStatus(message){const el=$('#syncState');if(el)el.textContent=message}
+function reportCloudError(error){const message=error?.message||String(error);setSyncStatus('Sync failed');showToast(`Could not save your journal: ${message}`)}
+function resetJournal(){T=[];N=[];C={cur:'₹',cap:0,theme:'system'};S=defaultStrategies()}
+async function loadJournal(user){if(authUser?.id===user.id&&!$('#appShell').hidden){authUser=user;render();return}
+ if(syncTimer){clearTimeout(syncTimer);syncTimer=null}
+ authUser=user;resetJournal();showAuthGate();$('#authTitle').textContent='Loading your journal';$('#authDescription').textContent='Loading private account data…';$('#authForm').hidden=true;$('#authLinks').hidden=true;$('#authSetup').hidden=true;
+ try{const{data,error}=await supabaseClient.from('journal_data').select('trades,strategies,notes,settings').eq('user_id',user.id).maybeSingle();if(error)throw error;
+  if(data){T=Array.isArray(data.trades)?data.trades:[];S=Array.isArray(data.strategies)?data.strategies:defaultStrategies();N=Array.isArray(data.notes)?data.notes:[];C=Object.assign({cur:'₹',cap:0,theme:'system'},data.settings&&typeof data.settings==='object'?data.settings:{})}
+  syncVersion=0;savedVersion=0;setSyncStatus('Synced');render();$('#appShell').hidden=false;$('#authGate').hidden=true
+ }catch(error){authUser=null;$('#authTitle').textContent='Journal unavailable';$('#authDescription').textContent='Your account is signed in, but its private journal could not be loaded.';$('#authSetup').hidden=false;$('#authSetup').textContent=`${error.message||error} Check the Supabase setup and run supabase/schema.sql, then retry.`;const retry=document.createElement('button');retry.type='button';retry.className='btn';retry.textContent='Retry';retry.onclick=()=>loadJournal(user);const logout=document.createElement('button');logout.type='button';logout.className='btn';logout.textContent='Sign out';logout.onclick=()=>supabaseClient.auth.signOut().catch(reportCloudError);$('#authSetup').append(' ',retry,' ',logout);$('#authForm').hidden=true;$('#authLinks').hidden=true}
+}
+let savedVersion=0;
+function queueCloudSave(){if(!authUser)return;syncVersion++;setSyncStatus('Saving…');if(syncTimer)clearTimeout(syncTimer);syncTimer=setTimeout(()=>{syncTimer=null;flushCloudSave().catch(reportCloudError)},500)}
+async function flushCloudSave(){if(syncTimer){clearTimeout(syncTimer);syncTimer=null}if(!authUser||savedVersion>=syncVersion)return;
+ const user=authUser,version=syncVersion,payload=JSON.parse(JSON.stringify({user_id:user.id,trades:T,strategies:S,notes:N,settings:C}));
+ const write=syncQueue.then(async()=>{if(authUser?.id!==user.id)return;const{error}=await supabaseClient.from('journal_data').upsert(payload,{onConflict:'user_id'});if(error)throw error;if(authUser?.id===user.id){savedVersion=Math.max(savedVersion,version);if(savedVersion>=syncVersion){setSyncStatus('All changes saved');if(clearLegacyAfterSync)clearImportedLegacyData()}}});
+ syncQueue=write.catch(()=>{});await write;if(authUser?.id===user.id&&savedVersion<syncVersion)await flushCloudSave()
+}
+function retryCloudSave(){if(!authUser)return;if(syncVersion===savedVersion)syncVersion++;setSyncStatus('Retrying…');flushCloudSave().catch(reportCloudError)}
+function clearImportedLegacyData(){try{Object.values(K).forEach(key=>localStorage.removeItem(key));clearLegacyAfterSync=false;showToast('Old browser-only data was safely moved to this account and removed from this browser.')}catch(error){showToast(`The cloud import succeeded, but old browser data could not be cleared: ${error.message||error}`)}}
+async function signOut(){try{await flushCloudSave();const{error}=await supabaseClient.auth.signOut();if(error)throw error}catch(error){showToast(`Sign out was canceled because your latest changes may not be saved: ${error.message||error}`)}}
+async function saveProfile(event){event.preventDefault();const name=$('#profileName').value.trim();if(!name)return;try{const{data,error}=await supabaseClient.auth.updateUser({data:{display_name:name}});if(error)throw error;if(data.user){authUser=data.user;render();showToast('Profile updated.')}}catch(error){showToast(`Could not update your profile: ${error.message||error}`)}}
+async function sendPasswordReset(){const email=authUser?.email||$('#authEmail').value.trim();if(!email){$('#authError').textContent='Enter your account email first.';return}try{const{error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(error)throw error;showToast('If that account exists, a password reset email has been sent.')}catch(error){$('#authError').textContent=error.message||String(error)}}
+function initAuth(){const config=window.TRADE_TRACKER_CONFIG||{};if(!window.supabase?.createClient){$('#authSetup').hidden=false;$('#authSetup').textContent='The authentication library could not be loaded. Check your internet connection and reload.';$('#authForm').hidden=true;$('#authLinks').hidden=true;return}
+ if(!config.supabaseUrl||!config.supabaseAnonKey){$('#authSetup').hidden=false;$('#authSetup').textContent='Cloud sign-in is not configured yet. Create a Supabase project, set its URL and publishable key in supabase-config.js, then run supabase/schema.sql in the project SQL editor.';$('#authSubmit').disabled=true;$('#authModeToggle').hidden=true;$('#authForgot').hidden=true;return}
+ supabaseClient=window.supabase.createClient(config.supabaseUrl,config.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+ supabaseClient.auth.onAuthStateChange((event,session)=>{setTimeout(()=>{if(event==='PASSWORD_RECOVERY'){showAuthGate();showAuthMode('update-password');$('#authForm').hidden=false;$('#authLinks').hidden=true;return}
+  if(session?.user){if(['INITIAL_SESSION','SIGNED_IN','USER_UPDATED'].includes(event))loadJournal(session.user);return}if(event==='SIGNED_OUT')deactivateAccount()},0)});
+}
+function deactivateAccount(){if(syncTimer){clearTimeout(syncTimer);syncTimer=null}authUser=null;syncVersion=0;savedVersion=0;clearLegacyAfterSync=false;resetJournal();showAuthGate();$('#authForm').reset();$('#authForm').hidden=false;$('#authLinks').hidden=false;$('#authSetup').hidden=true;showAuthMode('login')}
+$('#authForm').addEventListener('submit',async event=>{event.preventDefault();const button=$('#authSubmit');button.disabled=true;$('#authError').textContent='';
+ try{const email=$('#authEmail').value.trim(),password=$('#authPassword').value;if(authMode==='signup'){const name=$('#authName').value.trim();if(!name)throw new Error('Enter a profile name.');const{data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{display_name:name}}});if(error)throw error;if(!data.session){showAuthMode('login');$('#authError').textContent='Check your email to confirm your account, then sign in.'}return}
+  if(authMode==='update-password'){const{error}=await supabaseClient.auth.updateUser({password});if(error)throw error;showAuthMode('login');const{data,error:getError}=await supabaseClient.auth.getSession();if(getError)throw getError;if(data.session)await loadJournal(data.session.user);return}
+  const{error}=await supabaseClient.auth.signInWithPassword({email,password});if(error)throw error
+ }catch(error){$('#authError').textContent=error.message||String(error)}finally{button.disabled=false}});
+$('#authModeToggle').addEventListener('click',()=>showAuthMode(authMode==='signup'?'login':'signup'));
+$('#authForgot').addEventListener('click',sendPasswordReset);
 
 // ---- stats
 function st(L){const n=L.length,w=L.filter(t=>t.net>0),l=L.filter(t=>t.net<0),sm=a=>a.reduce((s,t)=>s+t.net,0),gp=sm(w),gl=Math.abs(sm(l));
@@ -286,13 +356,15 @@ pages.notes=()=>{post.push(nfill);return ph('Trade Notes','Learnings and mistake
 function nfill(){const el=$('#nl');if(!el)return;const items=[...N.map(n=>({k:'Note',d:n.date,t:n.title,b:n.body,nid:n.id})),...T.flatMap(t=>[t.learn&&{k:'Learning',d:t.date,t:t.symbol,b:t.learn,tid:t.id},t.mist&&{k:'Mistake',d:t.date,t:t.symbol,b:t.mist,tid:t.id}].filter(Boolean))]
  .filter(i=>(nf==='All'||i.k===nf)&&(!nq||`${i.t} ${i.b}`.toLowerCase().includes(nq.toLowerCase()))).sort((a,b)=>b.d.localeCompare(a.d));
  el.innerHTML=items.length?items.map(i=>`<div class="card" style="margin-bottom:12px"><div class="row sb"><div class="row"><span class="tag ${i.k==='Mistake'?'neg':i.k==='Learning'?'pos':''}">${i.k}</span><b>${esc(i.t)}</b><span class="mu mono" style="font-size:12px">${i.d}</span></div>${i.nid?`<button class="btn sm dg" onclick="delNote(${i.nid})">Delete</button>`:`<button class="btn sm" onclick="openTrade(${i.tid})">Open trade</button>`}</div><p style="margin-top:8px;white-space:pre-wrap">${esc(i.b)}</p></div>`).join(''):'<div class="card empty">Nothing here yet. Add learnings and mistakes to your trades, or write a note above.</div>'}
-pages.settings=()=>ph('Settings','Appearance, currency and your data')+
- `<div class="g g11"><div class="card"><h2>Appearance</h2>${seg([['light','Light'],['dark','Dark'],['system','System']],C.theme,'setTheme')}<div style="height:18px"></div><div class="fg"><label>Currency symbol<input value="${esc(C.cur)}" maxlength="3" onchange="C.cur=this.value||'₹';persist();render()"></label><label>Starting capital<input type="number" min="0" step="any" value="${C.cap||''}" placeholder="Optional" onchange="C.cap=num(this.value);persist();render()"></label></div><p class="mu" style="margin-top:10px">Starting capital sets the first point of the equity curve and the return on capital shown on the dashboard.</p></div>
- <div class="card"><h2>Data</h2><p class="mu" style="margin-bottom:12px">Everything is stored in this browser only. Back up regularly.</p><div class="row"><button class="btn" onclick="exCsv()">${ic('dl')}Export CSV</button><button class="btn" onclick="exJson()">${ic('dl')}Backup</button><button class="btn" onclick="$('#impF').click()">${ic('ul')}Restore</button><button class="btn dg" onclick="wipe()">Delete all trades</button></div></div></div>`;
+pages.settings=()=>ph('Settings','Account, appearance and your data')+
+ `<div class="g g11"><div class="card"><h2>Profile</h2><p class="mu account-email">${esc(authUser?.email||'')}</p><form onsubmit="saveProfile(event)" style="margin-top:12px"><label>Display name<input id="profileName" maxlength="80" value="${esc(authUser?.user_metadata?.display_name||'')}" autocomplete="name" required></label><div class="row" style="margin-top:10px"><button class="btn" type="submit">Save profile</button><button class="btn" type="button" onclick="sendPasswordReset()">Change password</button><button class="btn dg" type="button" onclick="signOut()">Sign out</button></div></form></div>
+ <div class="card"><h2>Cloud sync</h2><p class="mu">Your journal is stored in your signed-in account. Other users cannot access it.</p><div id="syncState" class="sync-state" role="status" aria-live="polite">Synced</div><button class="btn sm" style="margin-top:8px" onclick="retryCloudSave()">Retry sync</button></div></div>
+ <div class="g g11"><div class="card"><h2>Appearance</h2>${seg([['light','Light'],['dark','Dark'],['system','System']],C.theme,'setTheme')}<div style="height:18px"></div><div class="fg"><label>Currency symbol<input value="${esc(C.cur)}" maxlength="3" onchange="C.cur=this.value||'₹';persist();render()"></label><label>Starting capital<input type="number" min="0" step="any" value="${C.cap||''}" placeholder="Optional" onchange="C.cap=num(this.value);persist();render()"></label></div><p class="mu" style="margin-top:10px">Starting capital sets the first point of the equity curve and the return on capital shown on the dashboard.</p></div>
+ <div class="card"><h2>Data</h2><p class="mu" style="margin-bottom:12px">Your journal is saved to your private cloud account. Back up regularly.</p><div class="row"><button class="btn" onclick="exCsv()">${ic('dl')}Export CSV</button><button class="btn" onclick="exJson()">${ic('dl')}Backup</button><button class="btn" onclick="$('#impF').click()">${ic('ul')}Restore backup</button><button class="btn" onclick="importLegacy()">Import old browser data</button><button class="btn dg" onclick="wipe()">Delete all trades</button></div></div></div>`;
 
 // ---- router
 function render(){const p=location.hash.slice(1),pg=pages[p]?p:'dashboard';post=[];
- $('#side').innerHTML=`<div class="brand"><div class="logo">${ic('up')}</div><span>Trading Journal</span></div>`+NAV.map(([h,i,l])=>`<a href="#${h}" class="${h===pg?'on':''}" ${h===pg?'aria-current="page"':''} title="${l}">${ic(i)}<span>${l}</span></a>`).join('')+`<div class="sp"></div><button class="btn tt" id="tm2" onclick="flip()" aria-label="Toggle theme"></button>`;
+ $('#side').innerHTML=`<div class="brand"><div class="logo">${ic('up')}</div><span>Trading Journal</span></div>`+NAV.map(([h,i,l])=>`<a href="#${h}" class="${h===pg?'on':''}" ${h===pg?'aria-current="page"':''} title="${l}">${ic(i)}<span>${l}</span></a>`).join('')+`<div class="sp"></div><div class="account-footer"><b>${esc(authUser?.user_metadata?.display_name||'')}</b><small class="account-email">${esc(authUser?.email||'')}</small></div><button class="btn tt" id="tm2" onclick="flip()" aria-label="Toggle theme"></button>`;
  $('#pg').innerHTML=pages[pg]();applyTheme();post.forEach(f=>f())}
 addEventListener('hashchange',()=>{render();scrollTo(0,0)});let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(render,150)});
 
@@ -307,6 +379,11 @@ function exJson(){dl('trading-journal-backup.json',JSON.stringify({trades:T,stra
 function exCsv(){if(!T.length)return;const k=['date','symbol','dir','strat','tf','trend','entry','sl','target','exit','hit','qty','cap','rr','rules','emo','fomo','over','fee','gross','net','learn','mist'];dl('trades.csv',[k.join(','),...[...T].sort(cmp).map(t=>k.map(c=>'"'+String(t[c]??'').replace(/"/g,'""')+'"').join(','))].join('\n'),'text/csv')}
 function wipe(){if(confirm('Delete ALL trades? This cannot be undone. Export a backup first.')){T=[];persist();render()}}
 $('#impF').onchange=e=>{const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(confirm('Replace current data with this backup?')){if(Array.isArray(d))T=d;else{T=d.trades||[];S=d.strats||S;N=d.notes||[];C=Object.assign(C,d.settings||{})}persist();render()}}catch(x){alert('This is not a valid backup file.')}};r.readAsText(e.target.files[0])};
+function importLegacy(){try{const read=k=>{const raw=localStorage.getItem(k);return raw===null?null:JSON.parse(raw)},trades=read(K.t),strats=read(K.s),notes=read(K.n),settings=read(K.c);if([trades,strats,notes,settings].every(v=>v===null)){showToast('No previous browser-only journal data was found.');return}
+ if(trades!==null&&!Array.isArray(trades)||strats!==null&&!Array.isArray(strats)||notes!==null&&!Array.isArray(notes))throw new Error('The saved browser data has an unexpected format.');
+ if(!confirm('Replace this account journal with the old data saved in this browser? This will upload it to your signed-in account.'))return;
+ T=trades||[];S=strats||defaultStrategies();N=notes||[];C=Object.assign({cur:'₹',cap:0,theme:'system'},settings||{});clearLegacyAfterSync=true;persist();render();showToast('Previous browser data is being imported to this account.')
+ }catch(error){showToast(`Could not import browser data: ${error.message||error}`)}}
 
 // ---- trade dialog
 const fm=$('#tform'),fe=fm.elements;
@@ -333,7 +410,7 @@ function openStrat(id){sf.reset();editS=id||null;const s=id&&S.find(x=>x.id===id
 sf.addEventListener('submit',ev=>{ev.preventDefault();const d={name:se.name.value.trim(),desc:se.desc.value,rules:se.rules.value};
  if(editS){const old=S.find(x=>x.id===editS);if(old.name!==d.name)T.forEach(t=>{if(t.strat===old.name)t.strat=d.name});S=S.map(x=>x.id===editS?{...x,...d}:x)}else S.push({id:Date.now(),...d});persist();sdlg.close();render()});
 $('#sDel').onclick=()=>{if(confirm('Delete this strategy? Trades keep its name.')){S=S.filter(x=>x.id!==editS);persist();sdlg.close();render()}};
-render();
+render();showAuthMode('login');initAuth();
 
 </script>
 </body>
