@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trading Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+html[data-theme=light]{--bg:#f6f7fb;--sf:#fff;--bd:#e2e5ee;--tx:#0f172a;--mu:#5a6478;--ac:#3730a3;--ac2:#eceefd;--pb:#3730a3;--g:#0b8a5c;--r:#c4283a;--a:#a8560a;--b:#2559c9;color-scheme:light}
+html[data-theme=dark]{--bg:#0a0f1f;--sf:#111830;--bd:#222b49;--tx:#e8ecf8;--mu:#97a1bf;--ac:#a5acff;--ac2:#1b2352;--pb:#5256e0;--g:#34d399;--r:#fb7185;--a:#fbbf24;--b:#7cb4ff;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--tx);font:14px/1.5 'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.mono,.kv,.num,input[type=number],td.mono{font-family:'Geist Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.i{width:18px;height:18px;flex:none}.mu{color:var(--mu)}.pos{color:var(--g)}.neg{color:var(--r)}
+#side{position:fixed;inset:0 auto 0 0;width:236px;background:var(--sf);border-right:1px solid var(--bd);padding:18px 14px;display:flex;flex-direction:column;gap:4px;z-index:5}
+.brand{display:flex;gap:10px;align-items:center;font-weight:650;font-size:16px;padding:2px 8px 18px}
+.logo{width:30px;height:30px;border-radius:9px;background:var(--pb);color:#fff;display:grid;place-items:center}.logo .i{width:17px;height:17px}
+#side a{display:flex;gap:10px;align-items:center;padding:9px 10px;border-radius:10px;color:var(--mu);text-decoration:none;font-weight:500}
+#side a:hover{background:var(--bg);color:var(--tx)}#side a.on{background:var(--ac2);color:var(--ac)}
+#side .sp{flex:1}.top{display:none}
+main{margin-left:236px;padding:28px 32px 56px}.wrap{max-width:1240px;margin:0 auto}
+.ph{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+h1{font-size:22px;font-weight:650;letter-spacing:-.02em}h2{font-size:15px;font-weight:600;margin-bottom:12px}h3{font-size:14px;font-weight:600}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:18px}
+.g{display:grid;gap:16px;margin-bottom:16px}.k6{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.g2{grid-template-columns:2fr 1fr}.g11{grid-template-columns:1fr 1fr}
+.kpi .kv{font-size:24px;font-weight:600;margin:4px 0 2px;letter-spacing:-.02em}.ks{font-size:12px}
+.btn{border:1px solid var(--bd);background:var(--sf);color:var(--tx);border-radius:10px;padding:8px 14px;font:500 14px 'Geist';cursor:pointer;display:inline-flex;gap:8px;align-items:center;transition:background .15s}
+.btn:hover{background:var(--bg)}.btn.pr{background:var(--pb);border-color:var(--pb);color:#fff}.btn.pr:hover{filter:brightness(1.08)}
+.btn.sm{padding:5px 9px;font-size:13px}.btn.dg{color:var(--r)}.btn.on{background:var(--ac2);color:var(--ac);border-color:transparent}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+input,select,textarea{background:var(--sf);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:8px 10px;font:14px 'Geist';width:100%}
+textarea{resize:vertical;min-height:70px}label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--mu);font-weight:500}
+.seg{display:inline-flex;border:1px solid var(--bd);border-radius:10px;padding:2px;background:var(--bg)}
+.seg button{border:0;background:none;padding:5px 12px;border-radius:8px;color:var(--mu);font:500 13px 'Geist';cursor:pointer}.seg button.on{background:var(--sf);color:var(--tx);box-shadow:0 0 0 1px var(--bd)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row.sb{justify-content:space-between}
+.tb{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.tb>*{width:auto;flex:0 1 150px}.tb>.seg{flex:none}.tb .search{flex:1 1 220px;position:relative}.tb .search input{padding-left:34px}.tb .search .i{position:absolute;left:10px;top:9px;color:var(--mu)}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px;min-width:820px}
+th{color:var(--mu);text-align:left;padding:8px 10px;font-weight:500;font-size:12px;white-space:nowrap}td{padding:10px;border-top:1px solid var(--bd);vertical-align:middle}
+.num{text-align:right}th.num{text-align:right}tr.clk{cursor:pointer}tr.clk:hover td{background:var(--bg)}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;border:1px solid var(--bd);color:var(--mu);margin:0 4px 2px 0;white-space:nowrap}.tag.neg{color:var(--r);border-color:currentColor}.tag.pos{color:var(--g);border-color:currentColor}
+canvas.ch{width:100%;height:250px;display:block}.empty{color:var(--mu);padding:36px 12px;text-align:center}
+#tip{position:fixed;pointer-events:none;background:var(--tx);color:var(--bg);padding:6px 10px;border-radius:8px;font:12px 'Geist Mono';z-index:30;line-height:1.5}
+.dn{width:150px;height:150px;display:block;margin:0 auto 10px}.lrow{display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--bd)}
+.rl{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--bd);cursor:pointer}.rl:first-of-type{border-top:0}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.cal .h{color:var(--mu);font-size:12px;text-align:center;padding:4px}
+.day{min-height:84px;border:1px solid var(--bd);border-radius:10px;background:var(--sf);color:var(--tx);padding:8px;text-align:left;display:flex;flex-direction:column;gap:2px;font:inherit;cursor:pointer}
+.day.w{background:color-mix(in srgb,var(--g) 13%,var(--sf))}.day.l{background:color-mix(in srgb,var(--r) 13%,var(--sf))}.day.sel{outline:2px solid var(--ac)}.day small{color:var(--mu);font-size:11px}.day b{font-size:13px}
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}.sc ul{margin:8px 0 12px 18px;color:var(--mu);font-size:13px}
+.lc svg{width:100%;height:120px;background:var(--bg);border-radius:10px;border:1px solid var(--bd);padding:10px;margin-bottom:12px}.lc p{color:var(--mu);font-size:13.5px;line-height:1.45;margin-top:4px}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}.fg .wide{grid-column:1/-1}.fs{grid-column:1/-1;font-weight:600;font-size:13px;color:var(--ac);padding-top:6px}
+dialog{border:1px solid var(--bd);border-radius:12px;padding:0;background:var(--sf);color:var(--tx);width:min(880px,94vw);max-height:92vh;margin:auto}
+dialog::backdrop{background:rgba(5,8,20,.55)}.dh{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--bd)}
+.db{padding:20px;overflow:auto;max-height:70vh}.df{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--bd)}
+#lb{position:fixed;inset:0;background:rgba(5,8,20,.85);display:grid;place-items:center;z-index:40;cursor:zoom-out}#lb img{max-width:92%;max-height:92%;border-radius:10px}[hidden]{display:none!important}
+.thumb{width:150px;height:96px;object-fit:cover;border-radius:8px;border:1px solid var(--bd)}
+.bar{height:6px;border-radius:3px;background:var(--bd);overflow:hidden;min-width:70px}.bar i{display:block;height:100%}
+@media(max-width:1024px){#side{width:64px;align-items:center;padding:14px 8px}#side a span,.brand span{display:none}#side a{padding:10px}.brand{padding:2px 0 14px}main{margin-left:64px;padding:22px 20px 48px}.g2,.g11{grid-template-columns:1fr}}
+@media(max-width:700px){#side{inset:auto 0 0 0;width:auto;height:58px;flex-direction:row;justify-content:space-around;border-right:0;border-top:1px solid var(--bd);padding:6px}#side .brand,#side .sp,#side .tt{display:none}#side a{padding:10px 11px}
+ main{margin:0;padding:14px 14px 80px}.top{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--sf);border-bottom:1px solid var(--bd)}.top .brand{padding:0}
+ .day{min-height:58px;padding:5px}.day small{display:none}.day b{font-size:10.5px}.kpi .kv{font-size:20px}.tb>*{flex:1 1 130px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="top"><div class="brand"><div class="logo" id="lg1"></div>Trading Journal</div><button class="btn sm" onclick="flip()" aria-label="Toggle theme" id="tm1"></button></div>
+<nav id="side" aria-label="Main"></nav>
+<main><div class="wrap" id="pg"></div></main>
+<div id="tip" hidden></div>
+<div id="lb" hidden onclick="this.hidden=true"><img alt="Chart screenshot"></div>
+
+<dialog id="dlg"><form id="tform" method="dialog">
+ <div class="dh"><h2 id="dt" style="margin:0">New trade</h2><button type="button" class="btn sm" onclick="dlg.close()" aria-label="Close" id="x1"></button></div>
+ <div class="db"><div class="fg">
+  <div class="fs">Setup</div>
+  <label>Date<input type="date" name="date" required></label>
+  <label>Symbol<input name="symbol" placeholder="NIFTY, RELIANCE" required></label>
+  <label>Direction<select name="dir"><option>Long</option><option>Short</option></select></label>
+  <label>Strategy<select name="strat"></select></label>
+  <label>Time frame<select name="tf"><option>1m</option><option>5m</option><option>15m</option><option>1H</option><option>4H</option><option>Daily</option><option>Weekly</option></select></label>
+  <label>Trend<select name="trend"><option>Bullish</option><option>Bearish</option><option>Sideways</option></select></label>
+  <div class="fs">Levels and size</div>
+  <label>Entry<input type="number" step="any" name="entry" required></label>
+  <label>Stop loss<input type="number" step="any" name="sl" required></label>
+  <label>Target<input type="number" step="any" name="target" required></label>
+  <label>Exit<input type="number" step="any" name="exit" required></label>
+  <label>Target hit<select name="hit"><option>No</option><option>Yes</option></select></label>
+  <label>Quantity<input type="number" step="any" name="qty" required></label>
+  <label>Capital deployed (auto)<input type="number" step="any" name="cap" placeholder="Entry × quantity"></label>
+  <label>Planned risk : reward<input name="rr" readonly placeholder="auto"></label>
+  <div class="fs">Discipline</div>
+  <label>Followed rules<select name="rules"><option>Yes</option><option>No</option></select></label>
+  <label>Emotion control<select name="emo"><option>Yes</option><option>No</option></select></label>
+  <label>FOMO<select name="fomo"><option>No</option><option>Yes</option></select></label>
+  <label>Over trading<select name="over"><option>No</option><option>Yes</option></select></label>
+  <div class="fs">Result</div>
+  <label>Brokerage and charges<input type="number" step="any" name="fee" value="0"></label>
+  <label>Gross P&amp;L (auto, editable)<input type="number" step="any" name="gross"></label>
+  <label>Net profit<input name="net" readonly placeholder="auto"></label>
+  <label class="wide">Chart screenshot<input type="file" id="shot" accept="image/*"><img id="pv" class="thumb" hidden alt="Preview" style="margin-top:6px"></label>
+  <label class="wide">Learning<textarea name="learn"></textarea></label>
+  <label class="wide">Mistakes<textarea name="mist"></textarea></label>
+ </div></div>
+ <div class="df"><button type="button" class="btn dg" id="dDel" hidden>Delete</button><span style="flex:1"></span><button type="button" class="btn" onclick="dlg.close()">Cancel</button><button class="btn pr" type="submit">Save trade</button></div>
+</form></dialog>
+
+<dialog id="sdlg"><form id="sform" method="dialog">
+ <div class="dh"><h2 style="margin:0" id="sdt">Strategy</h2><button type="button" class="btn sm" onclick="sdlg.close()" aria-label="Close" id="x2"></button></div>
+ <div class="db"><div class="fg"><label class="wide">Name<input name="name" required></label><label class="wide">Description<textarea name="desc"></textarea></label><label class="wide">Rules (one per line)<textarea name="rules" style="min-height:110px"></textarea></label></div></div>
+ <div class="df"><button type="button" class="btn dg" id="sDel" hidden>Delete</button><span style="flex:1"></span><button type="button" class="btn" onclick="sdlg.close()">Cancel</button><button class="btn pr" type="submit">Save strategy</button></div>
+</form></dialog>
+<input type="file" id="impF" accept=".json" hidden>
+<script>
+const $=(s,r=document)=>r.querySelector(s),R=document.documentElement,dlg=$('#dlg'),sdlg=$('#sdlg');
+const sv=i=>`<svg viewBox="0 0 200 100">${i}</svg>`,ST=(c,w=2.5,d='')=>`fill:none;stroke:${c};stroke-width:${w};stroke-linejoin:round;stroke-dasharray:${d}`;
+const pl=(p,x='')=>sv(`<polyline points="${p}" style="${ST('var(--ac)',3)}"/>${x}`),ol=(p,c,w=2.5)=>`<polyline points="${p}" style="${ST(c,w)}"/>`;
+const L=(a,b,c,d)=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" style="stroke:var(--mu);stroke-dasharray:4"/>`;
+const cs=(a,w=30)=>{let t=`<svg viewBox="0 0 ${a.length*w+8} 100">`;a.forEach((k,i)=>{const[o,h,l,c]=k,x=i*w+w/2+4,col=c>=o?'var(--g)':'var(--r)',Y=v=>100-v;t+=`<line x1="${x}" x2="${x}" y1="${Y(h)}" y2="${Y(l)}" style="stroke:${col};stroke-width:2"/><rect x="${x-8}" y="${Y(Math.max(o,c))}" width="16" height="${Math.max(1.5,Math.abs(c-o))}" rx="2" style="fill:${col}"/>`});return t+'</svg>'};
+const bars=(a,m=0)=>sv(a.map((h,i)=>`<rect x="${i*19+6}" y="${m?(h>0?50-h:50):100-h}" width="13" height="${Math.abs(h)}" rx="3" style="fill:${m?(h>0?'var(--g)':'var(--r)'):'var(--ac)'}"/>`).join('')+(m?L(0,50,200,50):''));
+const P='0,70 20,55 40,65 60,45 80,55 100,35 120,45 140,25 160,35 180,15 200,22';
+const LC=['All','Candlesticks','Chart patterns','Indicators','Structure','Risk & mind'];
+const LI=[
+['Candlesticks','Candle anatomy',cs([[30,80,15,70],[70,85,20,35]]),'The body runs from open to close; wicks show the high and low. Green closed above its open, red below. Long body = conviction, long wick = rejection.'],
+['Candlesticks','Doji',cs([[50,78,22,51]]),'Open and close are almost equal: indecision. It matters most after a strong move or at support/resistance. Wait for the next candle to confirm.'],
+['Candlesticks','Marubozu',cs([[25,75,25,75],[75,75,25,25]]),'A full body with almost no wicks. One side controlled the whole candle, so it shows strong momentum.'],
+['Candlesticks','Hammer',cs([[84,86,72,74],[74,76,60,62],[62,64,46,48],[50,54,18,53]]),'After a downtrend: small body on top, long lower wick. Sellers pushed down but buyers rejected it. Bullish once the next candle closes above its high.'],
+['Candlesticks','Shooting star',cs([[16,20,14,18],[18,34,16,32],[32,48,30,46],[46,86,44,48]]),'After an uptrend: small body at the bottom, long upper wick. Buyers failed to hold the highs. Bearish if a red candle follows.'],
+['Candlesticks','Bullish engulfing',cs([[64,66,54,56],[56,57,42,44],[42,72,40,70]]),'A large green body that fully covers the previous red body at the end of a downtrend. Buyers took control.'],
+['Candlesticks','Bearish engulfing',cs([[34,44,32,42],[42,56,41,54],[56,58,28,30]]),'A large red body covering the previous green body after an uptrend. Sellers took control.'],
+['Candlesticks','Morning star',cs([[82,84,62,64],[60,62,50,54],[56,84,54,82]]),'Big red candle, a small indecision candle, then a big green candle closing deep into the first body. A bottom reversal. Evening star is the mirror at tops.'],
+['Chart patterns','Double top (M)',pl('10,80 50,20 90,60 130,20 170,85',L(0,20,200,20)+L(0,60,200,60)),'Two failed attempts at the same high. Sell on a close below the neckline (the middle low). Target is about the pattern height below it; stop above the second top.'],
+['Chart patterns','Double bottom (W)',pl('10,20 50,80 90,40 130,80 170,15',L(0,80,200,80)+L(0,40,200,40)),'Mirror of the double top. Buy on a close above the middle high. Target is about the pattern height; stop under the second bottom.'],
+['Chart patterns','Head and shoulders',pl('5,70 35,40 60,65 100,15 140,65 165,40 195,80',L(0,65,200,65)),'Three peaks, the middle one highest. A close below the neckline signals a reversal down. The inverse version at bottoms is bullish.'],
+['Chart patterns','Ascending triangle',pl('10,85 45,30 70,58 105,30 125,45 155,30 190,5',L(0,30,170,30)+L(10,72,155,38)),'Flat resistance with rising lows: buyers get more aggressive each dip. Buy the breakout above resistance, ideally with volume.'],
+['Chart patterns','Bull flag',pl('10,90 55,20 75,30 100,26 120,38 145,32 190,5',L(55,20,145,32)+L(75,30,145,42)),'A sharp rally (the pole) then a small downward drift (the flag). Enter on a break above the flag; target is about the pole length. Volume should shrink inside the flag.'],
+['Chart patterns','Cup and handle',pl('10,15 25,40 50,68 90,75 130,60 155,35 165,15 175,28 190,26 199,6',L(0,15,175,15)),'A rounded bottom followed by a small pullback (the handle). A breakout above the rim is bullish. Wider, smoother cups tend to be more reliable.'],
+['Indicators','EMA (exponential moving average)',sv(ol(P,'var(--mu)',1.5)+ol('0,70 40,60 80,52 120,42 160,32 200,24','var(--a)')+ol('0,72 50,66 100,55 150,44 200,36','var(--b)')),'Weights recent prices more, so it reacts faster than an SMA. Common sets: 9/21 intraday, 20/50/200 for swing. Price above the 200 EMA = bullish bias; fast crossing above slow = momentum shift. It whipsaws in sideways markets.'],
+['Indicators','SMA (simple moving average)',sv(ol(P,'var(--mu)',1.5)+ol('0,72 50,64 100,52 150,40 200,30','var(--a)')),'A plain average of the last N closes: slower and smoother than EMA. The 50 SMA crossing above the 200 SMA is the "golden cross"; below is the "death cross". Often acts as dynamic support or resistance.'],
+['Indicators','RSI (14)',sv(L(0,30,200,30)+L(0,70,200,70)+ol('0,40 20,60 40,85 60,75 80,50 100,20 120,10 140,35 160,60 180,80 200,70','var(--ac)')),'Momentum on a 0-100 scale. Above 70 = overbought, below 30 = oversold, but strong trends can stay there. Divergence (price makes a new high, RSI does not) warns of weakness.'],
+['Indicators','MACD',bars([-10,-22,-30,-18,-5,12,25,32,22,8],1),'MACD = EMA12 - EMA26, with a 9-period signal line and a histogram. MACD crossing above signal = bullish momentum; a shrinking histogram = fading momentum. It lags, so combine with price structure.'],
+['Indicators','Bollinger Bands',sv(ol('0,35 40,25 80,20 120,15 160,18 200,10','var(--mu)',1.5)+ol('0,75 40,65 80,60 120,55 160,58 200,50','var(--mu)',1.5)+ol('0,55 40,47 80,40 120,37 160,34 200,30','var(--ac)')),'A 20 SMA with bands at 2 standard deviations. A squeeze (narrow bands) often comes before a big move. Walking along the upper band shows a strong trend, not an automatic sell.'],
+['Indicators','VWAP',sv(ol('0,60 20,40 40,62 60,45 80,25 100,40 120,20 140,38 160,15 200,22','var(--mu)',1.5)+ol('0,55 50,48 100,40 150,32 200,28','var(--a)')),'Volume-weighted average price for the day; it resets daily. Institutions benchmark against it. Above VWAP = buyers in control intraday, below = sellers. A popular intraday entry and exit reference.'],
+['Indicators','Volume',bars([30,45,25,60,40,90,35,50,70,30]),'Volume confirms moves. A breakout on high volume is more trustworthy; a rally on falling volume is weak. Watch for spikes at support and resistance.'],
+['Indicators','ATR (average true range)','','The average candle range over N periods (usually 14). Use it for stops, for example stop = entry - 1.5 x ATR. Volatile market means a wider stop and a smaller quantity.'],
+['Structure','Trend: HH/HL',pl('10,88 40,60 60,72 100,38 120,50 170,12'),'Uptrend = higher highs and higher lows; downtrend = lower highs and lower lows. A break of the last higher low is the first warning. Trade with the trend on your higher time frame.'],
+['Structure','Support and resistance',pl('10,70 35,30 60,70 85,32 110,70 135,34 160,68 190,40',L(0,30,200,30)+L(0,70,200,70)),'Zones where price reacted repeatedly. More touches means more orders sit there. Broken resistance often flips into support.'],
+['Structure','Breakout vs fakeout',pl('10,60 50,30 90,32 130,30 150,15 170,40 195,50',L(0,30,200,30)),'A real breakout needs a close beyond the level, plus volume. A fakeout slips through and falls back inside. Wait for a close and a retest before entering.'],
+['Structure','Multi time frame','','Mark the trend on a higher frame (daily or 1H) and time the entry on a lower one (15m or 5m). Avoid longs on the 5m while the daily is in a clear downtrend.'],
+['Risk & mind','Risk:reward vs win rate','','Breakeven win rate = 1 / (1 + RR). At 1:2 you need about 34% wins, 1:3 = 25%, 1:4 = 20%, 1:5 = 17%. Higher RR leaves room for losses, but only if you actually hold to the target.'],
+['Risk & mind','Position sizing','','Quantity = (Capital x risk %) / (Entry - Stop loss). Example: 1,00,000 capital, 1% risk = 1,000; entry 500, stop 490 gives 100 shares.'],
+['Risk & mind','Capital deployed and ROI','','Capital deployed is the money tied up in a trade (Entry x Quantity). ROI = Net P&L / Capital deployed. Compare ROI across trades to see what your money really earns.'],
+['Risk & mind','Stop loss placement','','Put the stop where your idea is wrong (below the swing low, beyond a support zone, or ATR-based), not where the loss feels comfortable. Never widen a stop after entry.'],
+['Risk & mind','FOMO and revenge trades','','FOMO is entering late because price is running. A revenge trade tries to win back a loss. Rule: after two losses or one broken rule, stop for the day, and log it as a mistake.'],
+['Risk & mind','Over trading','','Too many low-quality trades pile up brokerage and mistakes. Set a maximum trade count and a daily loss limit before the market opens.'],
+['Risk & mind','Review routine','','Before the market: mark levels and trend. After: log each trade with a chart screenshot, the learning and the mistake. Weekly: filter the log by "Rules: No" and read what it cost you.']];
+
+const IC={dash:'<rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>',
+book:'<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
+cal:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+bar:'<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+note:'<path d="M15.5 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z"/><path d="M15 3v6h6"/>',
+gear:'<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
+search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+dl:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+ul:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
+cl:'<path d="m15 18-6-6 6-6"/>',cr:'<path d="m9 18 6-6-6-6"/>',x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+img:'<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
+up:'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>'};
+const ic=n=>`<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+const NAV=[['dashboard','dash','Dashboard'],['journal','book','Trade Journal'],['calendar','cal','Trading Calendar'],['analytics','bar','Analytics'],['strategies','target','Strategies'],['notes','note','Trade Notes'],['settings','gear','Settings']];
+
+// ---- data
+const K={t:'tt_trades_v1',s:'tt_strats_v1',n:'tt_notes_v1',c:'tt_set_v1'};
+const ld=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}};
+let T=ld(K.t,[]),N=ld(K.n,[]),C=Object.assign({cur:'₹',cap:0,theme:'system'},ld(K.c,{}));
+let S=ld(K.s,[{id:1,name:'Trend pullback',desc:'Trade pullbacks to a moving average in the direction of the higher time frame trend.',rules:'Higher time frame trend agrees\nEntry near EMA or support\nRisk:reward at least 1:2'},{id:2,name:'Breakout',desc:'Enter when price closes beyond a well-tested level with volume.',rules:'Level tested at least twice\nClose beyond the level\nVolume above average'}]);
+const persist=()=>{try{localStorage.setItem(K.t,JSON.stringify(T));localStorage.setItem(K.s,JSON.stringify(S));localStorage.setItem(K.n,JSON.stringify(N));localStorage.setItem(K.c,JSON.stringify(C))}catch(e){alert('Browser storage is full. Remove some chart screenshots or export a backup.')}};
+const td=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const num=v=>parseFloat(v)||0,esc=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const m=(v,sg)=>`${v<0?'−':sg&&v>0?'+':''}${esc(C.cur)}${Math.abs(v).toLocaleString('en-IN',{maximumFractionDigits:2})}`;
+const cl=v=>v>0?'pos':v<0?'neg':'',pc=v=>(v<0?'−':'')+Math.abs(v).toFixed(1)+'%',cmp=(a,b)=>a.date.localeCompare(b.date)||a.id-b.id;
+const kf=v=>{const a=Math.abs(v),s=v<0?'−':'';return s+(a>=1e6?(a/1e6).toFixed(1)+'M':a>=1e3?(a/1e3).toFixed(1)+'k':Math.round(a))};
+
+// ---- theme
+function applyTheme(){R.dataset.theme=C.theme==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):C.theme;
+ const ico=R.dataset.theme==='dark'?'sun':'moon';$('#tm1').innerHTML=ic(ico);const t2=$('#tm2');if(t2)t2.innerHTML=ic(ico)+'<span>Theme</span>'}
+function flip(){C.theme=R.dataset.theme==='dark'?'light':'dark';persist();applyTheme();render()}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(C.theme==='system'){applyTheme();render()}});
+$('#lg1').innerHTML=ic('up');$('#x1').innerHTML=ic('x');$('#x2').innerHTML=ic('x');
+
+// ---- stats
+function st(L){const n=L.length,w=L.filter(t=>t.net>0),l=L.filter(t=>t.net<0),sm=a=>a.reduce((s,t)=>s+t.net,0),gp=sm(w),gl=Math.abs(sm(l));
+ let eq=0,pk=0,dd=0,cw=0,cL=0,mw=0,ml=0;[...L].sort(cmp).forEach(t=>{eq+=t.net;pk=Math.max(pk,eq);dd=Math.max(dd,pk-eq);if(t.net>0){cw++;cL=0}else if(t.net<0){cL++;cw=0}else{cw=cL=0}mw=Math.max(mw,cw);ml=Math.max(ml,cL)});
+ const rr=L.map(t=>parseFloat((t.rr||'').split(':')[1])).filter(Boolean),nets=L.map(t=>t.net);
+ return{n,w:w.length,l:l.length,b:n-w.length-l.length,net:sm(L),wr:n?w.length/n*100:0,pf:gl?gp/gl:gp?Infinity:0,dd,aw:w.length?gp/w.length:0,al:l.length?-gl/l.length:0,
+  rr:rr.length?rr.reduce((a,b)=>a+b)/rr.length:0,ex:n?sm(L)/n:0,fees:L.reduce((s,t)=>s+num(t.fee),0),best:n?Math.max(...nets):0,worst:n?Math.min(...nets):0,mw,ml}}
+
+// ---- charts (canvas, hover tooltips)
+const tip=(e,h)=>{const t=$('#tip');t.innerHTML=h;t.hidden=false;t.style.left=Math.min(e.clientX+14,innerWidth-t.offsetWidth-8)+'px';t.style.top=(e.clientY+14)+'px'};
+function chart(id,o){const cv=$('#'+id);if(!cv)return;const r=devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight,n=o.v.length;if(!w||!n)return;
+ cv.width=w*r;cv.height=h*r;const x=cv.getContext('2d'),G=getComputedStyle(R),V=k=>G.getPropertyValue(k).trim(),L0=48,R0=8,T0=10,B0=22;
+ let mn=Math.min(0,...o.v),mx=Math.max(0,...o.v);if(o.line){mn=Math.min(...o.v);mx=Math.max(...o.v);const p=(mx-mn)*.1||1;mn-=p;mx+=p}if(mn===mx)mx=mn+1;
+ const iw=w-L0-R0,ih=h-T0-B0,X=i=>o.line?L0+iw*(n>1?i/(n-1):.5):L0+iw*(i+.5)/n,Y=v=>T0+ih*(1-(v-mn)/(mx-mn));
+ function draw(hi){x.setTransform(r,0,0,r,0,0);x.clearRect(0,0,w,h);x.font="11px 'Geist Mono',monospace";x.textBaseline='middle';x.lineWidth=1;
+  for(let i=0;i<=4;i++){const v=mn+(mx-mn)*i/4,y=Y(v);x.strokeStyle=V('--bd');x.beginPath();x.moveTo(L0,y);x.lineTo(w-R0,y);x.stroke();x.fillStyle=V('--mu');x.textAlign='right';x.fillText(kf(v),L0-8,y)}
+  [0,(n-1)>>1,n-1].filter((a,b,c)=>c.indexOf(a)===b).forEach((i,j,a)=>{x.textAlign=i===0&&a.length>1?'left':i===n-1&&a.length>1?'right':'center';x.fillStyle=V('--mu');x.fillText(o.s[i]||'',i===0&&a.length>1?L0:i===n-1&&a.length>1?w-R0:X(i),h-8)});
+  if(o.line){x.beginPath();o.v.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.strokeStyle=V('--ac');x.lineWidth=2;x.lineJoin='round';x.stroke();
+   x.lineTo(X(n-1),h-B0);x.lineTo(X(0),h-B0);x.fillStyle=V('--ac')+'1a';x.fill();
+   if(hi>=0){x.strokeStyle=V('--bd');x.lineWidth=1;x.beginPath();x.moveTo(X(hi),T0);x.lineTo(X(hi),h-B0);x.stroke();x.fillStyle=V('--ac');x.beginPath();x.arc(X(hi),Y(o.v[hi]),4.5,0,7);x.fill()}}
+  else{const bw=Math.min(30,iw/n*.7);x.strokeStyle=V('--mu');x.beginPath();x.moveTo(L0,Y(0));x.lineTo(w-R0,Y(0));x.stroke();
+   o.v.forEach((v,i)=>{x.globalAlpha=hi<0||hi===i?1:.45;x.fillStyle=V(v>=0?'--g':'--r');const y0=Y(0),y1=Y(v);x.fillRect(X(i)-bw/2,Math.min(y0,y1),bw,Math.max(1.5,Math.abs(y1-y0)));x.globalAlpha=1})}}
+ draw(-1);
+ cv.onmousemove=e=>{const px=e.clientX-cv.getBoundingClientRect().left;let i=o.line?Math.round((px-L0)/iw*(n-1)):Math.floor((px-L0)/iw*n);i=Math.max(0,Math.min(n-1,i));draw(i);tip(e,`${esc(o.l[i])}<br><b>${m(o.v[i],o.sg)}</b>`)};
+ cv.onmouseleave=()=>{draw(-1);$('#tip').hidden=true}}
+
+// ---- helpers for pages
+let post=[],per='all',pm='d',F={q:'',dir:'',res:'',strat:'',rules:'',mon:''},cm=new Date(),cd=null,nf='All',nq='',lcat='All',editId=null,curImg=null,editS=null;
+const kp=(l,v,s,c='')=>`<div class="card kpi"><div class="mu">${l}</div><div class="kv ${c}">${v}</div><div class="ks mu">${s}</div></div>`;
+const seg=(items,cur,fn)=>`<div class="seg" role="group">${items.map(([k,l])=>`<button class="${k===cur?'on':''}" onclick="${fn}('${k}')">${l}</button>`).join('')}</div>`;
+const opts=(list,cur,all)=>`<option value="">${all}</option>`+list.map(x=>`<option ${x===cur?'selected':''}>${esc(x)}</option>`).join('');
+const tags=t=>{let a=[];if(t.rules==='No')a.push('<span class="tag neg">Broke rules</span>');if(t.fomo==='Yes')a.push('<span class="tag neg">FOMO</span>');if(t.over==='Yes')a.push('<span class="tag neg">Over trading</span>');if(t.emo==='No')a.push('<span class="tag neg">Emotional</span>');return a.join('')||'<span class="tag pos">Disciplined</span>'};
+const row=t=>`<tr class="clk" onclick="openTrade(${t.id})"><td class="mono">${t.date}</td><td><b>${esc(t.symbol)}</b></td><td><span class="tag">${t.dir}</span></td><td>${esc(t.strat||'—')}</td><td class="num">${t.entry} → ${t.exit}</td><td class="num">${t.qty}</td><td class="num">${t.rr||'—'}</td><td class="num ${cl(t.net)}">${m(t.net,1)}</td><td class="num ${cl(t.net)}">${num(t.cap)>0?pc(t.net/t.cap*100):'—'}</td><td>${tags(t)}</td><td>${t.img?`<button class="btn sm" aria-label="View chart" onclick="event.stopPropagation();zoomT(${t.id})">${ic('img')}</button>`:''}</td></tr>`;
+const ttable=L=>L.length?`<div class="tw"><table><thead><tr><th>Date</th><th>Symbol</th><th>Side</th><th>Strategy</th><th class="num">Entry → Exit</th><th class="num">Qty</th><th class="num">RR</th><th class="num">Net P&amp;L</th><th class="num">Return</th><th>Discipline</th><th></th></tr></thead><tbody>${L.map(row).join('')}</tbody></table></div>`:'<div class="empty">No trades match. Add a trade or change the filters.</div>';
+const ph=(t,sub,act='')=>`<div class="ph"><div><h1>${t}</h1><div class="mu">${sub}</div></div><div class="row">${act}</div></div>`;
+const newBtn=`<button class="btn pr" onclick="openTrade()">${ic('plus')}New trade</button>`;
+const dn=(w,l,b)=>{const t=w+l+b||1,CF=251.33;let off=0;const sg=(v,c)=>{const len=v/t*CF,s=`<circle r="40" cx="50" cy="50" fill="none" style="stroke:${c}" stroke-width="14" stroke-dasharray="${len} ${CF-len}" stroke-dashoffset="${-off}" transform="rotate(-90 50 50)"/>`;off+=len;return s};
+ return `<svg viewBox="0 0 100 100" class="dn" role="img" aria-label="${w} wins, ${l} losses"><circle r="40" cx="50" cy="50" fill="none" style="stroke:var(--bd)" stroke-width="14"/>${sg(w,'var(--g)')}${sg(l,'var(--r)')}${sg(b,'var(--mu)')}<text x="50" y="50" text-anchor="middle" dominant-baseline="central" class="mono" style="font-size:15px;font-weight:600;fill:var(--tx)">${w+l?Math.round(w/(w+l+b)*100)+'%':'—'}</text></svg>`};
+const perOk=t=>{if(per==='all')return true;const d=new Date(t.date),n=new Date();return per==='ytd'?d.getFullYear()===n.getFullYear():(n-d)/864e5<=+per};
+const group=(L,fn)=>{const g={};L.forEach(t=>{const k=fn(t)||'—';(g[k]=g[k]||[]).push(t)});return g};
+const brk=(title,g,sort=1)=>{let e=Object.entries(g).map(([k,a])=>[k,st(a)]);if(sort)e.sort((a,b)=>b[1].net-a[1].net);const mx=Math.max(1,...e.map(a=>Math.abs(a[1].net)));
+ return `<div class="card"><h2>${title}</h2>${e.length?`<div class="tw"><table style="min-width:520px"><thead><tr><th></th><th class="num">Trades</th><th class="num">Win rate</th><th class="num">Profit factor</th><th class="num">Net P&amp;L</th><th></th></tr></thead><tbody>${e.map(([k,s])=>`<tr><td>${esc(k)}</td><td class="num">${s.n}</td><td class="num">${pc(s.wr)}</td><td class="num">${s.pf===Infinity?'∞':s.pf.toFixed(2)}</td><td class="num ${cl(s.net)}">${m(s.net,1)}</td><td><div class="bar"><i style="width:${Math.abs(s.net)/mx*100}%;background:var(${s.net>=0?'--g':'--r'})"></i></div></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No data yet.</div>'}</div>`};
+
+// ---- pages
+const pages={};
+pages.dashboard=()=>{const D=T.filter(perOk).sort(cmp),s=st(D),n=D.length,rec=[...D].reverse().slice(0,6);
+ const eq=[C.cap];D.forEach(t=>eq.push(eq[eq.length-1]+t.net));
+ const grp={};D.forEach(t=>{const k=pm==='m'?t.date.slice(0,7):t.date;grp[k]=(grp[k]||0)+t.net});let ks=Object.keys(grp).sort();if(pm==='d')ks=ks.slice(-30);
+ post.push(()=>chart('c-eq',{line:1,v:eq,l:['Start',...D.map(t=>t.date+' · '+t.symbol)],s:['',...D.map(t=>t.date.slice(5))]}),()=>chart('c-pf',{v:ks.map(k=>grp[k]),l:ks,s:ks.map(k=>pm==='m'?k:k.slice(5)),sg:1}));
+ const none=`<div class="empty">No trades yet.<br><br>${newBtn}</div>`;
+ return ph('Dashboard',n?`${n} trade${n>1?'s':''} in view`:'Your performance at a glance',seg([['all','All time'],['ytd','This year'],['90','90 days'],['30','30 days']],per,'setPer')+newBtn)+
+ `<div class="g k6">${kp('Net P&amp;L',m(s.net,1),C.cap>0?pc(s.net/C.cap*100)+' on capital':m(s.fees)+' in charges',cl(s.net))}${kp('Win rate',pc(s.wr),`${s.w} wins · ${s.l} losses`)}${kp('Total trades',s.n,`Best ${m(s.best,1)}`)}${kp('Profit factor',s.pf===Infinity?'∞':s.pf.toFixed(2),`Expectancy ${m(s.ex,1)}`,s.pf>=1?'pos':s.n?'neg':'')}${kp('Avg risk/reward',s.rr?'1:'+s.rr.toFixed(1):'—','Planned, per trade')}${kp('Max drawdown',m(-s.dd),'Peak to trough',s.dd?'neg':'')}</div>
+ <div class="g g2"><div class="card"><h2>Equity curve</h2>${n?'<canvas class="ch" id="c-eq" role="img" aria-label="Equity curve"></canvas>':none}</div>
+ <div class="card"><h2>Winning vs losing trades</h2>${dn(s.w,s.l,s.b)}<div class="lrow"><span class="mu">Average win</span><b class="mono pos">${m(s.aw,1)}</b></div><div class="lrow"><span class="mu">Average loss</span><b class="mono neg">${m(s.al,1)}</b></div><div class="lrow"><span class="mu">Win streak / loss streak</span><b class="mono">${s.mw} / ${s.ml}</b></div></div></div>
+ <div class="g g2"><div class="card"><div class="row sb"><h2 style="margin:0">Performance</h2>${seg([['d','Daily'],['m','Monthly']],pm,'setPm')}</div><div style="height:12px"></div>${n?'<canvas class="ch" id="c-pf" role="img" aria-label="Performance chart"></canvas>':'<div class="empty">Performance appears after your first trade.</div>'}</div>
+ <div class="card"><h2>Recent trades</h2>${rec.length?rec.map(t=>`<div class="rl" onclick="openTrade(${t.id})"><div><b>${esc(t.symbol)}</b> <span class="tag">${t.dir}</span><div class="mu mono" style="font-size:12px">${t.date}</div></div><b class="mono ${cl(t.net)}">${m(t.net,1)}</b></div>`).join(''):'<div class="empty">Nothing here yet.</div>'}</div></div>`};
+
+const jfilt=()=>T.filter(t=>(!F.q||`${t.symbol} ${t.strat||''} ${t.learn||''} ${t.mist||''}`.toLowerCase().includes(F.q.toLowerCase()))&&(!F.dir||t.dir===F.dir)&&(!F.strat||t.strat===F.strat)&&(!F.rules||t.rules===F.rules)&&(!F.mon||t.date.startsWith(F.mon))&&(!F.res||(F.res==='w'?t.net>0:F.res==='l'?t.net<0:t.net===0))).sort(cmp).reverse();
+function jfill(){const D=jfilt(),el=$('#jt');if(!el)return;$('#jsum').textContent=`${D.length} of ${T.length} trades · ${m(D.reduce((s,t)=>s+t.net,0),1)}`;el.innerHTML=ttable(D)}
+pages.journal=()=>{post.push(jfill);const ms=[...new Set(T.map(t=>t.date.slice(0,7)))].sort().reverse();
+ return ph('Trade Journal','<span id="jsum"></span>',newBtn)+`<div class="card"><div class="tb"><label class="search" style="display:block"><span hidden>Search</span>${ic('search')}<input type="search" placeholder="Search symbol, strategy, notes" value="${esc(F.q)}" oninput="fset('q',this.value)"></label>
+ <select aria-label="Direction" onchange="fset('dir',this.value)">${opts(['Long','Short'],F.dir,'All sides')}</select>
+ <select aria-label="Result" onchange="fset('res',this.value)"><option value="">Wins and losses</option><option value="w" ${F.res==='w'?'selected':''}>Wins</option><option value="l" ${F.res==='l'?'selected':''}>Losses</option><option value="z" ${F.res==='z'?'selected':''}>Breakeven</option></select>
+ <select aria-label="Strategy" onchange="fset('strat',this.value)">${opts(S.map(s=>s.name),F.strat,'All strategies')}</select>
+ <select aria-label="Rules" onchange="fset('rules',this.value)">${opts(['Yes','No'],F.rules,'Rules: any')}</select>
+ <select aria-label="Month" onchange="fset('mon',this.value)">${opts(ms,F.mon,'All months')}</select>
+ <button class="btn" onclick="F={q:'',dir:'',res:'',strat:'',rules:'',mon:''};render()">Clear</button></div><div id="jt"></div></div>`};
+
+pages.calendar=()=>{const y=cm.getFullYear(),mo=cm.getMonth(),dim=new Date(y,mo+1,0).getDate(),off=(new Date(y,mo,1).getDay()+6)%7,pre=`${y}-${String(mo+1).padStart(2,'0')}`;
+ const by=group(T,t=>t.date),ms=st(T.filter(t=>t.date.startsWith(pre)));let cells=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class="h">${d}</div>`).join('')+'<div></div>'.repeat(off);
+ for(let d=1;d<=dim;d++){const k=`${pre}-${String(d).padStart(2,'0')}`,a=by[k]||[],net=a.reduce((s,t)=>s+t.net,0);cells+=`<button class="day ${a.length?(net>0?'w':net<0?'l':''):''} ${cd===k?'sel':''}" onclick="selDay('${k}')" aria-label="${k}"><span>${d}</span>${a.length?`<b class="mono ${cl(net)}">${m(net,1)}</b><small>${a.length} trade${a.length>1?'s':''}</small>`:''}</button>`}
+ const dd=cd?T.filter(t=>t.date===cd).sort(cmp):null;
+ return ph('Trading Calendar',`${ms.n} trades · <span class="${cl(ms.net)} mono">${m(ms.net,1)}</span> this month`,`<button class="btn" onclick="cmv(-1)" aria-label="Previous month">${ic('cl')}</button><b style="min-width:130px;text-align:center">${cm.toLocaleString('en',{month:'long',year:'numeric'})}</b><button class="btn" onclick="cmv(1)" aria-label="Next month">${ic('cr')}</button>`)+
+ `<div class="card"><div class="cal">${cells}</div></div>`+(dd?`<div class="card" style="margin-top:16px"><h2>${cd}</h2>${ttable(dd)}</div>`:'')};
+
+pages.analytics=()=>{const s=st(T),D=[...T].sort(cmp),wd=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],byd=group(T,t=>wd[(new Date(t.date).getDay()+6)%7]),vals=wd.map(d=>(byd[d]||[]).reduce((a,t)=>a+t.net,0));
+ post.push(()=>chart('c-wd',{v:vals,l:wd.map((d,i)=>`${d} · ${(byd[d]||[]).length} trades`),s:wd,sg:1}));
+ const disc={};[['Followed rules',t=>t.rules==='Yes'],['Broke rules',t=>t.rules==='No'],['Stayed in control',t=>t.emo==='Yes'],['Lost control',t=>t.emo==='No'],['FOMO entries',t=>t.fomo==='Yes'],['Over trading',t=>t.over==='Yes']].forEach(([k,f])=>{const a=T.filter(f);if(a.length)disc[k]=a});
+ return ph('Analytics','Where your edge comes from, and where it leaks')+
+ `<div class="g k6">${kp('Expectancy',m(s.ex,1),'Average P&L per trade',cl(s.ex))}${kp('Average win',m(s.aw,1),`Payoff ${s.al?(s.aw/-s.al).toFixed(2):'—'}`,'pos')}${kp('Average loss',m(s.al,1),'Per losing trade','neg')}${kp('Best / worst',m(s.best,1),m(s.worst,1)+' worst')}${kp('Streaks',`${s.mw} / ${s.ml}`,'Best win / worst loss run')}${kp('Charges paid',m(s.fees),'Brokerage and fees')}</div>
+ <div class="g g11"><div class="card"><h2>P&amp;L by weekday</h2>${T.length?'<canvas class="ch" id="c-wd" role="img" aria-label="P&L by weekday"></canvas>':'<div class="empty">No data yet.</div>'}</div>${brk('Discipline impact',disc,0)}</div>
+ <div class="g g11">${brk('By strategy',group(T,t=>t.strat||'No strategy'))}${brk('By symbol',group(T,t=>t.symbol))}</div>
+ <div class="g g11">${brk('By time frame',group(T,t=>t.tf))}${brk('By direction and trend',group(T,t=>`${t.dir} in ${String(t.trend||'').toLowerCase()} trend`))}</div>`};
+
+pages.strategies=()=>{const cats=LC.map(x=>`<button class="btn sm ${x===lcat?'on':''}" onclick="setLc('${x}')">${x}</button>`).join('');
+ return ph('Strategies','Define your playbook and see which setups pay',`<button class="btn pr" onclick="openStrat()">${ic('plus')}New strategy</button>`)+
+ `<div class="sg" style="margin-bottom:28px">${S.length?S.map(x=>{const s=st(T.filter(t=>t.strat===x.name));return `<div class="card sc"><div class="row sb"><h3>${esc(x.name)}</h3><button class="btn sm" onclick="openStrat(${x.id})" aria-label="Edit strategy">${ic('gear')}</button></div><p class="mu" style="margin-top:4px">${esc(x.desc)}</p><ul>${String(x.rules||'').split('\n').filter(Boolean).map(r=>`<li>${esc(r)}</li>`).join('')}</ul>
+ <div class="row sb"><span class="mu">${s.n} trades</span><span class="mono">${s.n?pc(s.wr):'—'}</span><b class="mono ${cl(s.net)}">${s.n?m(s.net,1):'—'}</b></div></div>`}).join(''):'<div class="card empty">No strategies yet.</div>'}</div>
+ <h2>Reference library</h2><div class="row" style="margin-bottom:14px">${cats}</div><div class="sg">${LI.filter(i=>lcat==='All'||i[0]===lcat).map(i=>`<div class="card lc">${i[2]}<h3>${i[1]}</h3><p>${i[3]}</p></div>`).join('')}</div>`};
+
+pages.notes=()=>{post.push(nfill);return ph('Trade Notes','Learnings and mistakes from your trades, plus your own notes')+
+ `<div class="card" style="margin-bottom:16px"><h2>New note</h2><div class="fg"><label>Title<input id="nt"></label><label class="wide">Note<textarea id="nb"></textarea></label></div><div style="margin-top:12px"><button class="btn pr" onclick="addNote()">${ic('plus')}Save note</button></div></div>
+ <div class="tb">${seg([['All','All'],['Note','Notes'],['Learning','Learnings'],['Mistake','Mistakes']],nf,'setNf')}<label class="search" style="display:block"><span hidden>Search</span>${ic('search')}<input type="search" placeholder="Search notes" value="${esc(nq)}" oninput="nq=this.value;nfill()"></label></div><div id="nl"></div>`};
+function nfill(){const el=$('#nl');if(!el)return;const items=[...N.map(n=>({k:'Note',d:n.date,t:n.title,b:n.body,nid:n.id})),...T.flatMap(t=>[t.learn&&{k:'Learning',d:t.date,t:t.symbol,b:t.learn,tid:t.id},t.mist&&{k:'Mistake',d:t.date,t:t.symbol,b:t.mist,tid:t.id}].filter(Boolean))]
+ .filter(i=>(nf==='All'||i.k===nf)&&(!nq||`${i.t} ${i.b}`.toLowerCase().includes(nq.toLowerCase()))).sort((a,b)=>b.d.localeCompare(a.d));
+ el.innerHTML=items.length?items.map(i=>`<div class="card" style="margin-bottom:12px"><div class="row sb"><div class="row"><span class="tag ${i.k==='Mistake'?'neg':i.k==='Learning'?'pos':''}">${i.k}</span><b>${esc(i.t)}</b><span class="mu mono" style="font-size:12px">${i.d}</span></div>${i.nid?`<button class="btn sm dg" onclick="delNote(${i.nid})">Delete</button>`:`<button class="btn sm" onclick="openTrade(${i.tid})">Open trade</button>`}</div><p style="margin-top:8px;white-space:pre-wrap">${esc(i.b)}</p></div>`).join(''):'<div class="card empty">Nothing here yet. Add learnings and mistakes to your trades, or write a note above.</div>'}
+pages.settings=()=>ph('Settings','Appearance, currency and your data')+
+ `<div class="g g11"><div class="card"><h2>Appearance</h2>${seg([['light','Light'],['dark','Dark'],['system','System']],C.theme,'setTheme')}<div style="height:18px"></div><div class="fg"><label>Currency symbol<input value="${esc(C.cur)}" maxlength="3" onchange="C.cur=this.value||'₹';persist();render()"></label><label>Starting capital<input type="number" min="0" step="any" value="${C.cap||''}" placeholder="Optional" onchange="C.cap=num(this.value);persist();render()"></label></div><p class="mu" style="margin-top:10px">Starting capital sets the first point of the equity curve and the return on capital shown on the dashboard.</p></div>
+ <div class="card"><h2>Data</h2><p class="mu" style="margin-bottom:12px">Everything is stored in this browser only. Back up regularly.</p><div class="row"><button class="btn" onclick="exCsv()">${ic('dl')}Export CSV</button><button class="btn" onclick="exJson()">${ic('dl')}Backup</button><button class="btn" onclick="$('#impF').click()">${ic('ul')}Restore</button><button class="btn dg" onclick="wipe()">Delete all trades</button></div></div></div>`;
+
+// ---- router
+function render(){const p=location.hash.slice(1),pg=pages[p]?p:'dashboard';post=[];
+ $('#side').innerHTML=`<div class="brand"><div class="logo">${ic('up')}</div><span>Trading Journal</span></div>`+NAV.map(([h,i,l])=>`<a href="#${h}" class="${h===pg?'on':''}" ${h===pg?'aria-current="page"':''} title="${l}">${ic(i)}<span>${l}</span></a>`).join('')+`<div class="sp"></div><button class="btn tt" id="tm2" onclick="flip()" aria-label="Toggle theme"></button>`;
+ $('#pg').innerHTML=pages[pg]();applyTheme();post.forEach(f=>f())}
+addEventListener('hashchange',()=>{render();scrollTo(0,0)});let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(render,150)});
+
+// ---- actions
+const setPer=k=>{per=k;render()},setPm=k=>{pm=k;render()},setNf=k=>{nf=k;render()},setLc=k=>{lcat=k;render()},setTheme=k=>{C.theme=k;persist();render()};
+const fset=(k,v)=>{F[k]=v;k==='q'?jfill():render()},cmv=n=>{cm=new Date(cm.getFullYear(),cm.getMonth()+n,1);cd=null;render()},selDay=k=>{cd=cd===k?null:k;render()};
+const zoomT=id=>{$('#lb img').src=T.find(t=>t.id===id).img;$('#lb').hidden=false};
+function addNote(){const t=$('#nt').value.trim(),b=$('#nb').value.trim();if(!b)return;N.push({id:Date.now(),date:td(),title:t||'Note',body:b});persist();render()}
+function delNote(id){if(confirm('Delete this note?')){N=N.filter(n=>n.id!==id);persist();render()}}
+const dl=(n,t,mt)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:mt}));a.download=n;a.click()};
+function exJson(){dl('trading-journal-backup.json',JSON.stringify({trades:T,strats:S,notes:N,settings:C}),'application/json')}
+function exCsv(){if(!T.length)return;const k=['date','symbol','dir','strat','tf','trend','entry','sl','target','exit','hit','qty','cap','rr','rules','emo','fomo','over','fee','gross','net','learn','mist'];dl('trades.csv',[k.join(','),...[...T].sort(cmp).map(t=>k.map(c=>'"'+String(t[c]??'').replace(/"/g,'""')+'"').join(','))].join('\n'),'text/csv')}
+function wipe(){if(confirm('Delete ALL trades? This cannot be undone. Export a backup first.')){T=[];persist();render()}}
+$('#impF').onchange=e=>{const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(confirm('Replace current data with this backup?')){if(Array.isArray(d))T=d;else{T=d.trades||[];S=d.strats||S;N=d.notes||[];C=Object.assign(C,d.settings||{})}persist();render()}}catch(x){alert('This is not a valid backup file.')}};r.readAsText(e.target.files[0])};
+
+// ---- trade dialog
+const fm=$('#tform'),fe=fm.elements;
+function calc(){const e=num(fe.entry.value),s=num(fe.sl.value),t=num(fe.target.value),x=num(fe.exit.value),q=num(fe.qty.value),risk=Math.abs(e-s),rew=Math.abs(t-e),sg=fe.dir.value==='Long'?1:-1;
+ fe.rr.value=risk>0&&rew>0?'1:'+(rew/risk).toFixed(1):'';
+ if(!fe.cap.dataset.manual&&e&&q)fe.cap.value=(e*q).toFixed(2);
+ if(fe.exit.value!==''&&fe.entry.value!==''&&!fe.gross.dataset.manual)fe.gross.value=((x-e)*sg*q).toFixed(2);
+ fe.net.value=fe.gross.value!==''?(num(fe.gross.value)-num(fe.fee.value)).toFixed(2):''}
+fm.addEventListener('input',e=>{if(e.target===fe.gross)fe.gross.dataset.manual=1;if(e.target===fe.cap)fe.cap.dataset.manual=1;calc()});
+fe.dir.addEventListener('change',()=>{delete fe.gross.dataset.manual;calc()});
+function openTrade(id){fm.reset();delete fe.gross.dataset.manual;delete fe.cap.dataset.manual;curImg=null;$('#pv').hidden=true;editId=id||null;
+ const t=id&&T.find(x=>x.id===id),names=S.map(s=>s.name);if(t&&t.strat&&!names.includes(t.strat))names.push(t.strat);
+ fe.strat.innerHTML='<option value="">None</option>'+names.map(n=>`<option>${esc(n)}</option>`).join('');
+ if(t){for(const k in t)if(k!=='id'&&k!=='img'&&fe[k])fe[k].value=t[k];fe.gross.dataset.manual=1;fe.cap.dataset.manual=1;curImg=t.img||null;if(curImg){$('#pv').src=curImg;$('#pv').hidden=false}}else fe.date.value=td();
+ $('#dt').textContent=t?'Edit trade':'New trade';$('#dDel').hidden=!t;calc();dlg.showModal()}
+fm.addEventListener('submit',ev=>{ev.preventDefault();calc();const d=Object.fromEntries(new FormData(fm));delete d.shot;d.img=curImg;d.net=num(d.gross)-num(d.fee);d.id=editId||Date.now();
+ if(editId)T=T.map(t=>t.id===editId?d:t);else T.push(d);persist();dlg.close();render()});
+$('#dDel').onclick=()=>{if(confirm('Delete this trade?')){T=T.filter(t=>t.id!==editId);persist();dlg.close();render()}};
+$('#shot').onchange=e=>{const fl=e.target.files[0];if(!fl)return;const im=new Image();im.onload=()=>{const k=Math.min(1,900/im.width),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);curImg=c.toDataURL('image/jpeg',.65);$('#pv').src=curImg;$('#pv').hidden=false};im.src=URL.createObjectURL(fl)};
+
+// ---- strategy dialog
+const sf=$('#sform'),se=sf.elements;
+function openStrat(id){sf.reset();editS=id||null;const s=id&&S.find(x=>x.id===id);if(s){se.name.value=s.name;se.desc.value=s.desc||'';se.rules.value=s.rules||''}$('#sdt').textContent=s?'Edit strategy':'New strategy';$('#sDel').hidden=!s;sdlg.showModal()}
+sf.addEventListener('submit',ev=>{ev.preventDefault();const d={name:se.name.value.trim(),desc:se.desc.value,rules:se.rules.value};
+ if(editS){const old=S.find(x=>x.id===editS);if(old.name!==d.name)T.forEach(t=>{if(t.strat===old.name)t.strat=d.name});S=S.map(x=>x.id===editS?{...x,...d}:x)}else S.push({id:Date.now(),...d});persist();sdlg.close();render()});
+$('#sDel').onclick=()=>{if(confirm('Delete this strategy? Trades keep its name.')){S=S.filter(x=>x.id!==editS);persist();sdlg.close();render()}};
+render();
+
+</script>
+</body>
+</html>
