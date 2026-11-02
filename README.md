@@ -15,7 +15,7 @@ Email confirmation may be required before a new account can sign in. Passwords a
 
 ## Data and privacy
 
-Each account's trades, strategies, notes, settings, and chart images are stored in the Supabase database. Row-level security restricts access to the signed-in account. If you apply `supabase/admin.sql`, the designated administrator can also view, edit, and delete every journal, list accounts, and permanently delete accounts. Only run this script if that level of access is intended. Keep regular backups using the app's export feature.
+Each account's trades, strategies, notes, settings, and chart images are stored in the Supabase database. Trade entries can also record trailing-stop use and final stop price, setup type, market situation, and exit reason. Row-level security restricts access to the signed-in account. If you apply `supabase/admin.sql`, the designated administrator can also view, edit, and delete every journal, list accounts, and permanently delete accounts. Only run this script if that level of access is intended. Keep regular backups using the app's export feature.
 
 The Admin page is available after signing in with `admin@jaymaharaj.in`. It can add, edit, and delete videos, Reference Library topics, and Chart Tools Guide entries. The first time, choose **Restore built-in library** to publish the current learning material to the shared database; later edits are published to all signed-in users. The administrator is checked by Supabase database policies and functions, not by the visible Admin link.
 
