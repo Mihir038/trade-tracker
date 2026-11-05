@@ -595,11 +595,11 @@ const sharedTradeCard=(t,currency)=>{const learning=typeof t.learn==='string'?t.
 function sharingItem(item){
  const isOwner=item.owner_id===authUser?.id,name=esc(item.partner_display_name||item.partner_email||'Trading journal'),email=esc(item.partner_email||''),status=esc(item.status);
  let actions='';
- if(item.status==='pending'&&isOwner)actions=`<button class="btn pr sm" onclick="respondToShare('${jsArg(item.share_id)}',true)">Accept</button><button class="btn dg sm" onclick="respondToShare('${jsArg(item.share_id)}',false)">Decline</button>`;
- else if(item.status==='pending')actions=`<button class="btn sm" onclick="removeShare('${jsArg(item.share_id)}')">Cancel request</button>`;
- else if(item.status==='accepted'&&!isOwner)actions=`<button class="btn pr sm" onclick="viewSharedJournal('${jsArg(item.owner_id)}')">View journal</button><button class="btn sm" onclick="removeShare('${jsArg(item.share_id)}')">Stop viewing</button>`;
- else if(item.status==='accepted')actions=`<button class="btn dg sm" onclick="removeShare('${jsArg(item.share_id)}')">Revoke access</button>`;
- else actions=`<button class="btn sm" onclick="removeShare('${jsArg(item.share_id)}')">Remove</button>`;
+ if(item.status==='pending'&&isOwner)actions=`<button class="btn pr sm" onclick="respondToShare(${jsArg(item.share_id)},true)">Accept</button><button class="btn dg sm" onclick="respondToShare(${jsArg(item.share_id)},false)">Decline</button>`;
+ else if(item.status==='pending')actions=`<button class="btn sm" onclick="removeShare(${jsArg(item.share_id)})">Cancel request</button>`;
+ else if(item.status==='accepted'&&!isOwner)actions=`<button class="btn pr sm" onclick="viewSharedJournal(${jsArg(item.owner_id)})">View journal</button><button class="btn sm" onclick="removeShare(${jsArg(item.share_id)})">Stop viewing</button>`;
+ else if(item.status==='accepted')actions=`<button class="btn dg sm" onclick="removeShare(${jsArg(item.share_id)})">Revoke access</button>`;
+ else actions=`<button class="btn sm" onclick="removeShare(${jsArg(item.share_id)})">Remove</button>`;
  const relationship=isOwner?'Your journal · requested by':'Shared journal · from';
  return `<article class="share-item"><div class="share-item-main"><b>${name}</b><div class="mu">${email}</div><span class="share-state">${relationship} · ${status}</span></div><div class="share-item-actions">${actions}</div></article>`;
 }
