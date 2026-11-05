@@ -39,6 +39,7 @@ textarea{resize:vertical;min-height:70px}label{display:flex;flex-direction:colum
 th{color:var(--mu);text-align:left;padding:8px 10px;font-weight:500;font-size:12px;white-space:nowrap}td{padding:10px;border-top:1px solid var(--bd);vertical-align:middle}
 .num{text-align:right}th.num{text-align:right}tr.clk{cursor:pointer}tr.clk:hover td{background:var(--bg)}
 .tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;border:1px solid var(--bd);color:var(--mu);margin:0 4px 2px 0;white-space:nowrap}.tag.neg{color:var(--r);border-color:currentColor}.tag.pos{color:var(--g);border-color:currentColor}
+.journal-list{display:grid;gap:12px}.jtrade{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(230px,.8fr);background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden}.jtrade-main,.jtrade-learning{min-width:0;padding:16px}.jtrade-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.jtrade-open{min-width:0;border:0;padding:0;background:none;color:var(--tx);text-align:left;font:inherit;cursor:pointer}.jtrade-open:hover .jtrade-symbol{color:var(--ac)}.jtrade-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.jtrade-symbol{font-size:16px;font-weight:600}.jtrade-date{display:block;color:var(--mu);font-size:12px;margin-top:3px}.jtrade-actions{display:flex;gap:6px;flex:none}.jtrade-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:8px;margin:14px 0}.jtrade-stat{min-width:0;padding:8px 10px;border:1px solid var(--bd);border-radius:9px}.jtrade-stat small{display:block;color:var(--mu);font-size:11px}.jtrade-stat b{display:block;margin-top:2px;overflow-wrap:anywhere;font-size:13px}.jtrade-discipline{display:flex;flex-wrap:wrap;gap:4px}.jtrade-discipline .tag{margin:0}.jtrade-learning{border-left:1px solid var(--bd);background:var(--bg)}.jtrade-learning h3{margin-bottom:7px}.jtrade-learning p{color:var(--mu);font-size:13px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}.jtrade-mistake{margin-top:14px;padding-top:12px;border-top:1px solid var(--bd)}.jtrade-learning .jtrade-empty{font-style:italic}
 canvas.ch{width:100%;height:250px;display:block}.empty{color:var(--mu);padding:36px 12px;text-align:center}
 #tip{position:fixed;pointer-events:none;background:var(--tx);color:var(--bg);padding:6px 10px;border-radius:8px;font:12px 'Geist Mono';z-index:30;line-height:1.5}
 .dn{width:150px;height:150px;display:block;margin:0 auto 10px}.lrow{display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--bd)}
@@ -64,6 +65,7 @@ button:disabled{opacity:.55;cursor:not-allowed}.admin-list{display:grid;gap:10px
 @media(max-width:700px){#side{inset:auto 0 0 0;width:auto;height:58px;flex-direction:row;justify-content:space-around;border-right:0;border-top:1px solid var(--bd);padding:6px}#side .brand,#side .sp,#side .tt{display:none}#side a{padding:10px 11px}
  main{margin:0;padding:14px 14px 80px}.top{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--sf);border-bottom:1px solid var(--bd)}.top .brand{padding:0}
  .day{min-height:58px;padding:5px}.day small{display:none}.day b{font-size:10.5px}.kpi .kv{font-size:20px}.tb>*{flex:1 1 130px}.guide-tabs{gap:6px}.guide-tab{min-height:52px;padding:8px;font-size:12px;gap:4px}.guide-tab small{font-size:10px}}
+@media(max-width:700px){.jtrade{grid-template-columns:1fr}.jtrade-learning{border-left:0;border-top:1px solid var(--bd)}.jtrade-main,.jtrade-learning{padding:14px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -500,7 +502,7 @@ function chart(id,o){const cv=$('#'+id);if(!cv)return;const r=devicePixelRatio||
  cv.onmouseleave=()=>{draw(-1);$('#tip').hidden=true}}
 
 // ---- helpers for pages
-let post=[],per='all',pm='d',F={q:'',dir:'',res:'',strat:'',rules:'',mon:''},cm=new Date(),cd=null,nf='All',nq='',lcat='All',videoCategory='All',chartSearch='',chartGroup='All',guideSection='videos',editId=null,curImg=null,editS=null;
+let post=[],per='all',pm='d',F={q:'',dir:'',res:'',strat:'',rules:'',mon:''},journalView='cards',cm=new Date(),cd=null,nf='All',nq='',lcat='All',videoCategory='All',chartSearch='',chartGroup='All',guideSection='videos',editId=null,curImg=null,editS=null;
 const kp=(l,v,s,c='')=>`<div class="card kpi"><div class="mu">${l}</div><div class="kv ${c}">${v}</div><div class="ks mu">${s}</div></div>`;
 const seg=(items,cur,fn)=>`<div class="seg" role="group">${items.map(([k,l])=>`<button class="${k===cur?'on':''}" onclick="${fn}('${k}')">${l}</button>`).join('')}</div>`;
 const opts=(list,cur,all)=>`<option value="">${all}</option>`+list.map(x=>`<option ${x===cur?'selected':''}>${esc(x)}</option>`).join('');
@@ -531,7 +533,13 @@ pages.dashboard=()=>{const D=T.filter(perOk).sort(cmp),s=st(D),n=D.length,rec=[.
  <div class="card"><h2>Recent trades</h2>${rec.length?rec.map(t=>`<div class="rl" onclick="openTrade(${t.id})"><div><b>${esc(t.symbol)}</b> <span class="tag">${t.dir}</span><div class="mu mono" style="font-size:12px">${t.date}</div></div><b class="mono ${cl(t.net)}">${m(t.net,1)}</b></div>`).join(''):'<div class="empty">Nothing here yet.</div>'}</div></div>`};
 
 const jfilt=()=>T.filter(t=>(!F.q||`${t.symbol} ${t.strat||''} ${t.setup||''} ${t.market||''} ${t.exitReason||''} ${t.learn||''} ${t.mist||''}`.toLowerCase().includes(F.q.toLowerCase()))&&(!F.dir||t.dir===F.dir)&&(!F.strat||t.strat===F.strat)&&(!F.rules||t.rules===F.rules)&&(!F.mon||t.date.startsWith(F.mon))&&(!F.res||(F.res==='w'?t.net>0:F.res==='l'?t.net<0:t.net===0))).sort(cmp).reverse();
-function jfill(){const D=jfilt(),el=$('#jt');if(!el)return;$('#jsum').textContent=`${D.length} of ${T.length} trades · ${m(D.reduce((s,t)=>s+t.net,0),1)}`;el.innerHTML=ttable(D)}
+const jcard=t=>{const learning=typeof t.learn==='string'?t.learn.trim():'',mistake=typeof t.mist==='string'?t.mist.trim():'';
+ return `<article class="jtrade"><div class="jtrade-main"><div class="jtrade-head"><button class="jtrade-open" onclick="openTrade(${t.id})"><span class="jtrade-title"><span class="jtrade-symbol">${esc(t.symbol||'—')}</span><span class="tag">${esc(t.dir||'—')}</span></span><span class="jtrade-date">${esc(t.date||'')}${t.strat?` · ${esc(t.strat)}`:''}</span></button><div class="jtrade-actions">${t.img?`<button class="btn sm" aria-label="View chart for ${esc(t.symbol||'trade')}" onclick="zoomT(${t.id})">${ic('img')}</button>`:''}<button class="btn sm" onclick="openTrade(${t.id})">Edit</button></div></div>
+ <div class="jtrade-stats"><div class="jtrade-stat"><small>Entry → Exit</small><b class="mono">${esc(t.entry??'—')} → ${esc(t.exit??'—')}</b></div><div class="jtrade-stat"><small>Quantity</small><b class="mono">${esc(t.qty??'—')}</b></div><div class="jtrade-stat"><small>Risk : reward</small><b class="mono">${esc(t.rr||'—')}</b></div><div class="jtrade-stat"><small>Net P&amp;L</small><b class="mono ${cl(t.net)}">${m(t.net,1)}</b></div><div class="jtrade-stat"><small>Return</small><b class="mono ${cl(t.net)}">${num(t.cap)>0?pc(t.net/t.cap*100):'—'}</b></div></div>
+ <div class="jtrade-discipline">${tags(t)}</div></div><aside class="jtrade-learning"><h3>Learning</h3><p class="${learning?'':'jtrade-empty'}">${learning?esc(learning):'No learning note recorded for this trade yet.'}</p>${mistake?`<div class="jtrade-mistake"><h3>Mistakes</h3><p>${esc(mistake)}</p></div>`:''}</aside></article>`};
+function jfill(){const D=jfilt(),el=$('#jt');if(!el)return;$('#jsum').textContent=`${D.length} of ${T.length} trades · ${m(D.reduce((s,t)=>s+t.net,0),1)}`;
+ for(const [id,view] of [['jview-cards','cards'],['jview-list','list']]){const button=$(`#${id}`);if(button){button.classList.toggle('on',journalView===view);button.setAttribute('aria-pressed',String(journalView===view))}}
+ el.innerHTML=D.length?(journalView==='cards'?`<div class="journal-list">${D.map(jcard).join('')}</div>`:ttable(D)):'<div class="empty">No trades match. Add a trade or change the filters.</div>'}
 pages.journal=()=>{post.push(jfill);const ms=[...new Set(T.map(t=>t.date.slice(0,7)))].sort().reverse();
  return ph('Trade Journal','<span id="jsum"></span>',newBtn)+`<div class="card"><div class="tb"><label class="search" style="display:block"><span hidden>Search</span>${ic('search')}<input type="search" placeholder="Search symbol, setup, market, notes" value="${esc(F.q)}" oninput="fset('q',this.value)"></label>
  <select aria-label="Direction" onchange="fset('dir',this.value)">${opts(['Long','Short'],F.dir,'All sides')}</select>
@@ -539,6 +547,7 @@ pages.journal=()=>{post.push(jfill);const ms=[...new Set(T.map(t=>t.date.slice(0
  <select aria-label="Strategy" onchange="fset('strat',this.value)">${opts(S.map(s=>s.name),F.strat,'All strategies')}</select>
  <select aria-label="Rules" onchange="fset('rules',this.value)">${opts(['Yes','No'],F.rules,'Rules: any')}</select>
  <select aria-label="Month" onchange="fset('mon',this.value)">${opts(ms,F.mon,'All months')}</select>
+ <div class="seg" role="group" aria-label="Trade view"><button type="button" id="jview-cards" class="${journalView==='cards'?'on':''}" aria-pressed="${journalView==='cards'}" onclick="setJournalView('cards')">Cards</button><button type="button" id="jview-list" class="${journalView==='list'?'on':''}" aria-pressed="${journalView==='list'}" onclick="setJournalView('list')">List</button></div>
  <button class="btn" onclick="F={q:'',dir:'',res:'',strat:'',rules:'',mon:''};render()">Clear</button></div><div id="jt"></div></div>`};
 
 pages.calendar=()=>{const y=cm.getFullYear(),mo=cm.getMonth(),dim=new Date(y,mo+1,0).getDate(),off=(new Date(y,mo,1).getDay()+6)%7,pre=`${y}-${String(mo+1).padStart(2,'0')}`;
@@ -710,7 +719,7 @@ function chartGuideFill(){const root=$('#ctGuideGrid');if(!root)return;const q=c
 addEventListener('hashchange',()=>{render();scrollTo(0,0)});let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(render,150)});
 
 // ---- actions
-const setPer=k=>{per=k;render()},setPm=k=>{pm=k;render()},setNf=k=>{nf=k;render()},setLc=k=>{lcat=k;render()},setVideoCat=k=>{videoCategory=k;render()},setChartGroup=k=>{chartGroup=k;render()},setGuideSection=k=>{guideSection=k;render()},setAdminTab=k=>{adminTab=k;if(k==='users')adminUsersLoaded=false;render()},setTheme=k=>{C.theme=k;persist();render()};
+const setPer=k=>{per=k;render()},setPm=k=>{pm=k;render()},setNf=k=>{nf=k;render()},setLc=k=>{lcat=k;render()},setVideoCat=k=>{videoCategory=k;render()},setChartGroup=k=>{chartGroup=k;render()},setGuideSection=k=>{guideSection=k;render()},setAdminTab=k=>{adminTab=k;if(k==='users')adminUsersLoaded=false;render()},setTheme=k=>{C.theme=k;persist();render()},setJournalView=k=>{journalView=k;jfill()};
 const fset=(k,v)=>{F[k]=v;k==='q'?jfill():render()},cmv=n=>{cm=new Date(cm.getFullYear(),cm.getMonth()+n,1);cd=null;render()},selDay=k=>{cd=cd===k?null:k;render()};
 const zoomT=id=>{$('#lb img').src=T.find(t=>t.id===id).img;$('#lb').hidden=false};
 function addNote(){const t=$('#nt').value.trim(),b=$('#nb').value.trim();if(!b)return;N.push({id:Date.now(),date:td(),title:t||'Note',body:b});persist();render()}
