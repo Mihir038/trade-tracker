@@ -40,6 +40,7 @@ th{color:var(--mu);text-align:left;padding:8px 10px;font-weight:500;font-size:12
 .num{text-align:right}th.num{text-align:right}tr.clk{cursor:pointer}tr.clk:hover td{background:var(--bg)}
 .tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;border:1px solid var(--bd);color:var(--mu);margin:0 4px 2px 0;white-space:nowrap}.tag.neg{color:var(--r);border-color:currentColor}.tag.pos{color:var(--g);border-color:currentColor}
 .journal-list{display:grid;gap:12px}.jtrade{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(230px,.8fr);background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden}.jtrade-main,.jtrade-learning{min-width:0;padding:16px}.jtrade-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.jtrade-open{min-width:0;border:0;padding:0;background:none;color:var(--tx);text-align:left;font:inherit;cursor:pointer}.jtrade-open:hover .jtrade-symbol{color:var(--ac)}.jtrade-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.jtrade-symbol{font-size:16px;font-weight:600}.jtrade-date{display:block;color:var(--mu);font-size:12px;margin-top:3px}.jtrade-actions{display:flex;gap:6px;flex:none}.jtrade-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:8px;margin:14px 0}.jtrade-stat{min-width:0;padding:8px 10px;border:1px solid var(--bd);border-radius:9px}.jtrade-stat small{display:block;color:var(--mu);font-size:11px}.jtrade-stat b{display:block;margin-top:2px;overflow-wrap:anywhere;font-size:13px}.jtrade-discipline{display:flex;flex-wrap:wrap;gap:4px}.jtrade-discipline .tag{margin:0}.jtrade-learning{border-left:1px solid var(--bd);background:var(--bg)}.jtrade-learning h3{margin-bottom:7px}.jtrade-learning p{color:var(--mu);font-size:13px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}.jtrade-mistake{margin-top:14px;padding-top:12px;border-top:1px solid var(--bd)}.jtrade-learning .jtrade-empty{font-style:italic}
+.share-list{display:grid;gap:10px}.share-item{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px;border:1px solid var(--bd);border-radius:10px}.share-item-main{min-width:0;overflow-wrap:anywhere}.share-item-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;flex:none}.share-state{display:inline-block;margin-top:4px;font-size:12px;color:var(--mu)}.share-form{display:flex;align-items:flex-end;gap:10px;max-width:620px}.share-form label{flex:1}.share-note{font-size:12px;margin-top:8px}.shared-trades{display:grid;gap:12px}.shared-trade{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,.75fr);border:1px solid var(--bd);border-radius:12px;overflow:hidden;background:var(--sf)}.shared-trade-main,.shared-trade-learning{padding:16px;min-width:0}.shared-trade-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.shared-trade-title{font-size:16px;font-weight:600}.shared-trade-date{display:block;color:var(--mu);font-size:12px}.shared-trade-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin:14px 0}.shared-trade-stat{min-width:0;padding:8px 10px;border:1px solid var(--bd);border-radius:9px}.shared-trade-stat small{display:block;color:var(--mu);font-size:11px}.shared-trade-stat b{display:block;margin-top:2px;overflow-wrap:anywhere;font-size:13px}.shared-trade-learning{border-left:1px solid var(--bd);background:var(--bg)}.shared-trade-learning h3{font-size:13px;margin-bottom:6px}.shared-trade-learning p{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--mu);font-size:13px}.shared-trade-learning h3:not(:first-child){margin-top:12px}
 canvas.ch{width:100%;height:250px;display:block}.empty{color:var(--mu);padding:36px 12px;text-align:center}
 #tip{position:fixed;pointer-events:none;background:var(--tx);color:var(--bg);padding:6px 10px;border-radius:8px;font:12px 'Geist Mono';z-index:30;line-height:1.5}
 .dn{width:150px;height:150px;display:block;margin:0 auto 10px}.lrow{display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--bd)}
@@ -65,7 +66,7 @@ button:disabled{opacity:.55;cursor:not-allowed}.admin-list{display:grid;gap:10px
 @media(max-width:700px){#side{inset:auto 0 0 0;width:auto;height:58px;flex-direction:row;justify-content:space-around;border-right:0;border-top:1px solid var(--bd);padding:6px}#side .brand,#side .sp,#side .tt{display:none}#side a{padding:10px 11px}
  main{margin:0;padding:14px 14px 80px}.top{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--sf);border-bottom:1px solid var(--bd)}.top .brand{padding:0}
  .day{min-height:58px;padding:5px}.day small{display:none}.day b{font-size:10.5px}.kpi .kv{font-size:20px}.tb>*{flex:1 1 130px}.guide-tabs{gap:6px}.guide-tab{min-height:52px;padding:8px;font-size:12px;gap:4px}.guide-tab small{font-size:10px}}
-@media(max-width:700px){.jtrade{grid-template-columns:1fr}.jtrade-learning{border-left:0;border-top:1px solid var(--bd)}.jtrade-main,.jtrade-learning{padding:14px}}
+@media(max-width:700px){.jtrade,.shared-trade{grid-template-columns:1fr}.jtrade-learning,.shared-trade-learning{border-left:0;border-top:1px solid var(--bd)}.jtrade-main,.jtrade-learning,.shared-trade-main,.shared-trade-learning{padding:14px}.share-item{align-items:flex-start;flex-direction:column}.share-item-actions{justify-content:flex-start}.share-form{align-items:stretch;flex-direction:column}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -354,6 +355,7 @@ function chartToolVisual(tool){const[group,title]=tool,ln=(x1,y1,x2,y2,color='va
 
 const IC={dash:'<rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>',
 book:'<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
+share:'<path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 8v6"/><path d="M23 11h-6"/>',
 cal:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
 bar:'<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
 target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
@@ -369,7 +371,7 @@ img:'<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="
 up:'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
 chart:'<path d="M3 3v18h18"/><path d="m7 14 4-4 4 3 6-7"/><path d="M17 6h4v4"/>'};
 const ic=n=>`<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
-const NAV=[['dashboard','dash','Dashboard'],['journal','book','Trade Journal'],['calendar','cal','Trading Calendar'],['analytics','bar','Analytics'],['strategies','target','Strategies'],['guide','chart','Guid'],['notes','note','Trade Notes'],['settings','gear','Settings']];
+const NAV=[['dashboard','dash','Dashboard'],['journal','book','Trade Journal'],['sharing','share','Journal Sharing'],['calendar','cal','Trading Calendar'],['analytics','bar','Analytics'],['strategies','target','Strategies'],['guide','chart','Guid'],['notes','note','Trade Notes'],['settings','gear','Settings']];
 
 // ---- data
 const K={t:'tt_trades_v1',s:'tt_strats_v1',n:'tt_notes_v1',c:'tt_set_v1'};
@@ -382,6 +384,7 @@ let isAdmin=false,adminAccessError='',siteContentError='',siteContentSeeded=fals
 let adminTab='learning',adminLearningKind='videos',adminEditingIndex=null;
 let adminUsers=[],adminUsersLoaded=false,adminUsersLoading=false,adminUsersError='',adminSelectedUser=null;
 let adminJournalText='',adminJournalLoading=false,adminJournalError='';
+let shareItems=[],sharingLoaded=false,sharingLoading=false,sharingError='',sharedJournalId='',sharedJournal=null,sharedJournalLoading=false;
 const adminCandidate=()=>String(authUser?.email||'').trim().toLowerCase()===ADMIN_EMAIL;
 const orderedCategories=(base,values)=>{const unique=[...new Set(values)];return[...base.filter(x=>x!=='All'&&unique.includes(x)),...unique.filter(x=>!base.includes(x))]};
 const resetLearningContent=()=>{VL=JSON.parse(JSON.stringify(DEFAULT_VL));LI=JSON.parse(JSON.stringify(DEFAULT_LI));CT=JSON.parse(JSON.stringify(DEFAULT_CT));LC=['All',...orderedCategories(DEFAULT_LC,LI.map(x=>x[0]))];VLC=['All',...orderedCategories(DEFAULT_VLC,VL.map(x=>x.category))];CTG=orderedCategories(DEFAULT_CTG,CT.map(x=>x[0]));videoCategory='All';lcat='All';chartGroup='All'};
@@ -439,7 +442,7 @@ async function refreshSiteContent(){
  try{const{data,error}=await supabaseClient.from('site_content').select('content').eq('id','learning').maybeSingle();if(error)throw error;if(data)applyLearningContent(data.content);else resetLearningContent()}
  catch(error){siteContentError=error.message||String(error);resetLearningContent()}
 }
-function resetJournal(){T=[];N=[];C={cur:'₹',cap:0,theme:'system'};S=defaultStrategies();isAdmin=false;adminAccessError='';siteContentError='';siteContentSeeded=false;adminTab='learning';adminLearningKind='videos';adminEditingIndex=null;clearAdminWorkspace();resetLearningContent()}
+function resetJournal(){T=[];N=[];C={cur:'₹',cap:0,theme:'system'};S=defaultStrategies();isAdmin=false;adminAccessError='';siteContentError='';siteContentSeeded=false;adminTab='learning';adminLearningKind='videos';adminEditingIndex=null;clearAdminWorkspace();shareItems=[];sharingLoaded=false;sharingLoading=false;sharingError='';sharedJournalId='';sharedJournal=null;sharedJournalLoading=false;resetLearningContent()}
 async function loadJournal(user){if(authUser?.id===user.id&&!$('#appShell').hidden){authUser=user;await Promise.all([refreshAdminAccess(user),refreshSiteContent()]);render();return}
  if(syncTimer){clearTimeout(syncTimer);syncTimer=null}
  authUser=user;resetJournal();showAuthGate();$('#authTitle').textContent='Loading your journal';$('#authDescription').textContent='Loading private account data…';$('#authForm').hidden=true;$('#authLinks').hidden=true;$('#authSetup').hidden=true;
@@ -549,6 +552,73 @@ pages.journal=()=>{post.push(jfill);const ms=[...new Set(T.map(t=>t.date.slice(0
  <select aria-label="Month" onchange="fset('mon',this.value)">${opts(ms,F.mon,'All months')}</select>
  <div class="seg" role="group" aria-label="Trade view"><button type="button" id="jview-cards" class="${journalView==='cards'?'on':''}" aria-pressed="${journalView==='cards'}" onclick="setJournalView('cards')">Cards</button><button type="button" id="jview-list" class="${journalView==='list'?'on':''}" aria-pressed="${journalView==='list'}" onclick="setJournalView('list')">List</button></div>
  <button class="btn" onclick="F={q:'',dir:'',res:'',strat:'',rules:'',mon:''};render()">Clear</button></div><div id="jt"></div></div>`};
+
+async function loadSharingData(force=false){
+ if(!authUser||sharingLoading||(!force&&sharingLoaded))return;
+ const userId=authUser.id;sharingLoading=true;sharingError='';
+ try{const{data,error}=await supabaseClient.rpc('list_journal_shares');if(error)throw error;if(authUser?.id!==userId)return;shareItems=Array.isArray(data)?data:[];sharingLoaded=true}
+ catch(error){if(authUser?.id===userId){sharingError=error.message||String(error);sharingLoaded=false}}
+ finally{if(authUser?.id===userId){sharingLoading=false;if(location.hash==='#sharing')render()}}
+}
+async function submitShareRequest(event){
+ event.preventDefault();const form=event.currentTarget,email=new FormData(form).get('email')?.toString().trim();if(!email)return;
+ try{const{error}=await supabaseClient.rpc('request_journal_access',{target_email:email});if(error)throw error;form.reset();showToast('If that email belongs to a confirmed account, a journal access request has been sent.');sharingLoaded=false;await loadSharingData(true)}
+ catch(error){showToast(`Could not send the journal request: ${error.message||error}`)}
+}
+async function respondToShare(id,accept){
+ const userId=authUser?.id;if(!userId)return;
+ try{const{error}=await supabaseClient.rpc('respond_journal_access',{request_id:id,accept_request:accept});if(error)throw error;if(authUser?.id!==userId)return;sharingLoaded=false;sharedJournal=null;sharedJournalId='';await loadSharingData(true);showToast(accept?'Journal access approved. The requester can now view your trades.':'Journal request declined.')}
+ catch(error){if(authUser?.id===userId)showToast(`Could not update the journal request: ${error.message||error}`)}
+}
+async function removeShare(id){
+ const share=shareItems.find(item=>item.share_id===id);if(!share)return;
+ const owner=share.owner_id===authUser?.id,verb=owner?'Revoke this person’s access to your journal?':'Stop sharing this journal with your account?';
+ if(!confirm(verb))return;
+ const userId=authUser?.id;if(!userId)return;
+ try{const{error}=await supabaseClient.rpc('remove_journal_access',{request_id:id});if(error)throw error;if(authUser?.id!==userId)return;sharingLoaded=false;if(sharedJournalId===share.owner_id){sharedJournal=null;sharedJournalId=''}await loadSharingData(true);showToast(owner?'Journal access revoked.':'Journal access removed.')}
+ catch(error){if(authUser?.id===userId)showToast(`Could not remove journal access: ${error.message||error}`)}
+}
+async function viewSharedJournal(ownerId){
+ const grant=shareItems.find(item=>item.owner_id===ownerId&&item.viewer_id===authUser?.id&&item.status==='accepted');if(!grant)return;
+ const userId=authUser.id;sharedJournalId=ownerId;sharedJournal=null;sharedJournalLoading=true;render();
+ try{const{data,error}=await supabaseClient.rpc('get_shared_journal',{journal_owner_id:ownerId});if(error)throw error;if(authUser?.id!==userId)return;
+  if(!data||!Array.isArray(data.trades))throw new Error('The shared journal returned unexpected data.');
+  sharedJournal={ownerId,trades:data.trades,currency:typeof data.currency==='string'?data.currency:C.cur};
+ }catch(error){if(authUser?.id===userId){sharedJournalId='';showToast(`Could not load the shared journal: ${error.message||error}`)}}
+ finally{if(authUser?.id===userId){sharedJournalLoading=false;if(location.hash==='#sharing')render()}}
+}
+const sharedMoney=(value,currency)=>`${num(value)<0?'−':num(value)>0?'+':''}${esc(currency||C.cur)}${Math.abs(num(value)).toLocaleString('en-IN',{maximumFractionDigits:2})}`;
+const sharedTradeCard=(t,currency)=>{const learning=typeof t.learn==='string'?t.learn.trim():'',mistake=typeof t.mist==='string'?t.mist.trim():'',context=[t.strat,t.setup,t.market,t.tf,t.trend].filter(Boolean).map(esc).join(' · ');
+ return `<article class="shared-trade"><div class="shared-trade-main"><div class="shared-trade-head"><div><span class="shared-trade-title">${esc(t.symbol||'—')}</span> <span class="tag">${esc(t.dir||'—')}</span><span class="shared-trade-date">${esc(t.date||'')}${context?` · ${context}`:''}</span></div><b class="mono ${cl(t.net)}">${sharedMoney(t.net,currency)}</b></div>
+ <div class="shared-trade-stats"><div class="shared-trade-stat"><small>Entry / stop</small><b class="mono">${esc(t.entry??'—')} / ${esc(t.sl??'—')}</b></div><div class="shared-trade-stat"><small>Target / exit</small><b class="mono">${esc(t.target??'—')} / ${esc(t.exit??'—')}</b></div><div class="shared-trade-stat"><small>Quantity</small><b class="mono">${esc(t.qty??'—')}</b></div><div class="shared-trade-stat"><small>Risk : reward</small><b class="mono">${esc(t.rr||'—')}</b></div><div class="shared-trade-stat"><small>Fees</small><b class="mono">${sharedMoney(t.fee,currency)}</b></div><div class="shared-trade-stat"><small>Return</small><b class="mono ${cl(t.net)}">${num(t.cap)>0?pc(num(t.net)/num(t.cap)*100):'—'}</b></div></div>
+ <div>${tags(t)}</div></div><aside class="shared-trade-learning"><h3>Learning</h3><p>${learning?esc(learning):'No learning note recorded.'}</p>${mistake?`<h3>Mistakes</h3><p>${esc(mistake)}</p>`:''}${t.exitReason?`<h3>Exit reason</h3><p>${esc(t.exitReason)}</p>`:''}</aside></article>`};
+function sharingItem(item){
+ const isOwner=item.owner_id===authUser?.id,name=esc(item.partner_display_name||item.partner_email||'Trading journal'),email=esc(item.partner_email||''),status=esc(item.status);
+ let actions='';
+ if(item.status==='pending'&&isOwner)actions=`<button class="btn pr sm" onclick="respondToShare('${jsArg(item.share_id)}',true)">Accept</button><button class="btn dg sm" onclick="respondToShare('${jsArg(item.share_id)}',false)">Decline</button>`;
+ else if(item.status==='pending')actions=`<button class="btn sm" onclick="removeShare('${jsArg(item.share_id)}')">Cancel request</button>`;
+ else if(item.status==='accepted'&&!isOwner)actions=`<button class="btn pr sm" onclick="viewSharedJournal('${jsArg(item.owner_id)}')">View journal</button><button class="btn sm" onclick="removeShare('${jsArg(item.share_id)}')">Stop viewing</button>`;
+ else if(item.status==='accepted')actions=`<button class="btn dg sm" onclick="removeShare('${jsArg(item.share_id)}')">Revoke access</button>`;
+ else actions=`<button class="btn sm" onclick="removeShare('${jsArg(item.share_id)}')">Remove</button>`;
+ const relationship=isOwner?'Your journal · requested by':'Shared journal · from';
+ return `<article class="share-item"><div class="share-item-main"><b>${name}</b><div class="mu">${email}</div><span class="share-state">${relationship} · ${status}</span></div><div class="share-item-actions">${actions}</div></article>`;
+}
+pages.sharing=()=>{
+ if(sharedJournalId){
+  if(sharedJournalLoading)return ph('Shared Journal','Loading read-only trade journal')+`<div class="card"><div class="empty">Loading shared trades…</div></div>`;
+  const grant=shareItems.find(item=>item.owner_id===sharedJournalId&&item.viewer_id===authUser?.id&&item.status==='accepted');
+  if(sharedJournal&&grant)return ph(esc(grant.partner_display_name||'Shared Journal'),`${esc(grant.partner_email||'')} · read-only journal`,`<button class="btn" onclick="sharedJournalId='';sharedJournal=null;render()">Back to sharing</button>`)+
+   (sharedJournal.trades.length?`<div class="shared-trades">${[...sharedJournal.trades].sort(cmp).reverse().map(t=>sharedTradeCard(t,sharedJournal.currency)).join('')}</div>`:'<div class="card empty">This journal has no trades yet.</div>');
+  return ph('Shared Journal','This journal is no longer available')+`<div class="card"><button class="btn" onclick="sharedJournalId='';render()">Back to sharing</button></div>`
+ }
+ if(!sharingLoaded&&!sharingLoading&&!sharingError)post.push(()=>loadSharingData());
+ const inbox=shareItems.filter(item=>item.owner_id===authUser?.id),outbox=shareItems.filter(item=>item.viewer_id===authUser?.id);
+ return ph('Journal Sharing','Request read-only access to another journal, or approve who can view yours.',`<button class="btn" onclick="loadSharingData(true)" ${sharingLoading?'disabled':''}>Refresh</button>`)+
+  `<div class="card" style="margin-bottom:16px"><h2>Request access</h2><form class="share-form" onsubmit="submitShareRequest(event)"><label>Account email<input type="email" name="email" autocomplete="email" maxlength="320" placeholder="trader@example.com" required></label><button class="btn pr" type="submit">Send request</button></form><p class="mu share-note">The other account must use a confirmed email and accept your request before you can view its trades. You can stop viewing a journal at any time.</p></div>
+  ${sharingLoading?'<div class="card empty">Loading sharing requests…</div>':''}${sharingError?`<div class="card" role="alert"><p class="auth-error">${esc(sharingError)}</p><button class="btn sm" style="margin-top:8px" onclick="loadSharingData(true)">Retry</button><p class="mu share-note">If the sharing feature has not been installed in Supabase yet, run <b>supabase/sharing.sql</b>.</p></div>`:''}
+  <div class="g g11"><section class="card"><h2>Requests to your journal</h2>${inbox.length?`<div class="share-list">${inbox.map(sharingItem).join('')}</div>`:'<p class="mu">No one has requested access.</p>'}</section>
+  <section class="card"><h2>Your requests and shared journals</h2>${outbox.length?`<div class="share-list">${outbox.map(sharingItem).join('')}</div>`:'<p class="mu">You have no outgoing requests or shared journals.</p>'}</section></div>`
+};
 
 pages.calendar=()=>{const y=cm.getFullYear(),mo=cm.getMonth(),dim=new Date(y,mo+1,0).getDate(),off=(new Date(y,mo,1).getDay()+6)%7,pre=`${y}-${String(mo+1).padStart(2,'0')}`;
  const by=group(T,t=>t.date),ms=st(T.filter(t=>t.date.startsWith(pre)));let cells=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class="h">${d}</div>`).join('')+'<div></div>'.repeat(off);
@@ -703,7 +773,7 @@ pages.admin=()=>{
 };
 pages.settings=()=>ph('Settings','Account, appearance and your data')+
  `<div class="g g11"><div class="card"><h2>Profile</h2><p class="mu account-email">${esc(authUser?.email||'')}</p><form onsubmit="saveProfile(event)" style="margin-top:12px"><label>Display name<input id="profileName" maxlength="80" value="${esc(authUser?.user_metadata?.display_name||'')}" autocomplete="name" required></label><div class="row" style="margin-top:10px"><button class="btn" type="submit">Save profile</button><button class="btn" type="button" onclick="sendPasswordReset()">Change password</button><button class="btn dg" type="button" onclick="signOut()">Sign out</button></div></form></div>
- <div class="card"><h2>Cloud sync</h2><p class="mu">Your journal is stored in your signed-in account. Other users cannot access it.</p><div id="syncState" class="sync-state" role="status" aria-live="polite">Synced</div><button class="btn sm" style="margin-top:8px" onclick="retryCloudSave()">Retry sync</button></div></div>
+ <div class="card"><h2>Cloud sync</h2><p class="mu">Your journal is private unless you approve a read-only sharing request. You can revoke access at any time.</p><div id="syncState" class="sync-state" role="status" aria-live="polite">Synced</div><button class="btn sm" style="margin-top:8px" onclick="retryCloudSave()">Retry sync</button></div></div>
  <div class="g g11"><div class="card"><h2>Appearance</h2>${seg([['light','Light'],['dark','Dark'],['system','System']],C.theme,'setTheme')}<div style="height:18px"></div><div class="fg"><label>Currency symbol<input value="${esc(C.cur)}" maxlength="3" onchange="C.cur=this.value||'₹';persist();render()"></label><label>Starting capital<input type="number" min="0" step="any" value="${C.cap||''}" placeholder="Optional" onchange="C.cap=num(this.value);persist();render()"></label></div><p class="mu" style="margin-top:10px">Starting capital sets the first point of the equity curve and the return on capital shown on the dashboard.</p></div>
  <div class="card"><h2>Data</h2><p class="mu" style="margin-bottom:12px">Your journal is saved to your private cloud account. Back up regularly.</p><div class="row"><button class="btn" onclick="exCsv()">${ic('dl')}Export CSV</button><button class="btn" onclick="exJson()">${ic('dl')}Backup</button><button class="btn" onclick="$('#impF').click()">${ic('ul')}Restore backup</button><button class="btn" onclick="importLegacy()">Import old browser data</button><button class="btn dg" onclick="wipe()">Delete all trades</button></div></div>
  </div></div>`;
